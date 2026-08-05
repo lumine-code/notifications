@@ -464,7 +464,7 @@
               expect(fatalError).toHaveClass("has-close");
               expect(fatalError.innerHTML).toContain("ReferenceError: a is not defined");
               expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">notifications package</a>',
+                '<a href="https://github.com/lumine-code/notifications">notifications package</a>',
               );
               expect(fatalError.issue.getPackageName()).toBe("notifications");
               button = fatalError.querySelector(".btn");
@@ -475,7 +475,7 @@
               expect(issueBody).not.toMatch(/Unknown/gi);
               expect(issueBody).toContain("ReferenceError: a is not defined");
               expect(issueBody).toContain(
-                "Thrown From**: [notifications](https://github.com/lumine-code/lumine) package ",
+                "Thrown From**: [notifications](https://github.com/lumine-code/notifications) package ",
               );
               return expect(issueBody).toContain("### Non-Core Packages");
             });
