@@ -53,13 +53,13 @@
     "notifications/NotificationsLog": "createLog"
   },
   "dependencies": {
-    "@lumine-code/fs-plus": "https://github.com/lumine-code/fs-plus.git#94566356cd8b77123d71fac024e63bff7cec434b",
+    "@lumine-code/fs-plus": "github:lumine-code/fs-plus#94566356cd8b77123d71fac024e63bff7cec434b",
     "semver": "^7.0.0",
     "stacktrace-parser": "^0.1.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@lumine-code/temp": "https://github.com/lumine-code/node-temp.git#150772eb009638e11ed741bf8548aa74c8e5dd1c",
+    "@lumine-code/temp": "github:lumine-code/node-temp#150772eb009638e11ed741bf8548aa74c8e5dd1c",
     "coffeelint": "^2.1.0",
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
