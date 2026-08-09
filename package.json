@@ -53,7 +53,7 @@
     "notifications/NotificationsLog": "createLog"
   },
   "dependencies": {
-    "@lumine-code/fs-plus": "github:lumine-code/fs-plus#a5911f08dc9a762b3f2e9a0dc5fca9cfea7aada6",
+    "@lumine-code/fs-plus": "github:lumine-code/fs-plus#d70ed86e9b41ab8be3481b11267a9e27aff7c7aa",
     "semver": "^7.8.5",
     "stacktrace-parser": "^0.1.11"
   },
