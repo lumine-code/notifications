@@ -338,7 +338,7 @@
           (issueBody = ref2[3]));
         describe("when the editor is in dev mode", function () {
           beforeEach(function () {
-            spyOn(atom, "inDevMode").andReturn(true);
+            spyOn(atom.window, "isDevMode").andReturn(true);
             generateException();
             notificationContainer = workspaceElement.querySelector("atom-notifications");
             return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
@@ -352,9 +352,9 @@
           return it("does not display a notification", function () {
             var handler;
             atom.notifications.clear();
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             handler = jasmine.createSpy("onWillThrowErrorHandler");
-            atom.onWillThrowError(handler);
+            atom.runtime.onWillThrowError(handler);
             fs.readFile(__dirname, function () {
               var err;
               err = new Error();
@@ -440,7 +440,7 @@
           beforeEach(function () {
             issueTitle = null;
             issueBody = null;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             spyOn(UserUtils, "getPackageVersionShippedWithLumine").andCallFake(function () {
               return "0.0.0";
@@ -496,7 +496,7 @@
           beforeEach(function () {
             var e, errMsg, home;
             issueTitle = null;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -529,7 +529,7 @@
         describe("when an exception is thrown from a linked package", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             // Resolve the temp directory to its real path: on macOS the temp
             // root is itself a symlink (/var -> /private/var), which would make
@@ -589,7 +589,7 @@
         describe("when an exception is thrown from an unloaded package", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("atom-packages-");
             atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
@@ -627,7 +627,7 @@
         describe("when an exception is thrown from a package trying to load", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("atom-packages-");
             atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
@@ -669,7 +669,7 @@
         describe("when an exception is thrown from a package trying to load a grammar", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("atom-packages-");
             atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
@@ -716,7 +716,7 @@
         describe("when an exception is thrown from a package trying to activate", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("atom-packages-");
             atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
@@ -759,7 +759,7 @@
           beforeEach(function () {
             var e, filePath;
             issueBody = null;
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -794,7 +794,7 @@
             atom.commands.dispatch(workspaceElement, "some-package:a-command");
             atom.commands.dispatch(workspaceElement, "some-package:a-command");
             atom.commands.dispatch(workspaceElement, "some-package:a-command");
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -846,7 +846,7 @@
         });
         describe("when the there is an error searching for the issue", function () {
           beforeEach(function () {
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses({
               issuesErrorResponse: "403",
             });
@@ -870,7 +870,7 @@
         });
         describe("when the error has not been reported", function () {
           beforeEach(function () {
-            return spyOn(atom, "inDevMode").andReturn(false);
+            return spyOn(atom.window, "isDevMode").andReturn(false);
           });
           return describe("when the message is longer than 100 characters", function () {
             var expectedIssueTitle, message;
@@ -913,7 +913,7 @@
             spyOn(UserUtilities, "getPackageVersion").andCallFake(function () {
               return installedVersion;
             });
-            return spyOn(atom, "inDevMode").andReturn(false);
+            return spyOn(atom.window, "isDevMode").andReturn(false);
           });
           // A community package installs from its own Git origin, so nothing here
           // can say whether it is out of date — only a bundled package shadowed by
@@ -976,7 +976,7 @@
         });
         describe("when the error has been reported", function () {
           beforeEach(function () {
-            return spyOn(atom, "inDevMode").andReturn(false);
+            return spyOn(atom.window, "isDevMode").andReturn(false);
           });
           describe("when the issue is open", function () {
             beforeEach(function () {
@@ -1073,7 +1073,7 @@
         });
         return describe("when a spawn ENOENT error is thrown", function () {
           beforeEach(function () {
-            return spyOn(atom, "inDevMode").andReturn(false);
+            return spyOn(atom.window, "isDevMode").andReturn(false);
           });
           describe("when the binary has no path", function () {
             beforeEach(function () {

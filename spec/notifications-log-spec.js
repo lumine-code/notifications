@@ -158,7 +158,7 @@
         fatalError = null;
         describe("when the there is an error searching for the issue", function () {
           beforeEach(function () {
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses({
               issuesErrorResponse: "403",
             });
@@ -189,7 +189,7 @@
             spyOn(UserUtilities, "getPackageVersionShippedWithLumine").andCallFake(function () {
               return versionShippedWithLumine;
             });
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             spyOn(NotificationIssue.prototype, "getPackageName").andCallFake(function () {
               return "somepackage";
@@ -209,7 +209,7 @@
         });
         return describe("when the error has been reported", function () {
           beforeEach(function () {
-            spyOn(atom, "inDevMode").andReturn(false);
+            spyOn(atom.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses({
               issuesResponse: {
                 items: [
