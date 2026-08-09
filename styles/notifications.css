@@ -1,4 +1,4 @@
-atom-notifications {
+lumine-notifications {
   /* Package-local values (converted from Less variables) */
   --notifications-icon-size: 30px;
   --notifications-width: 450px;
@@ -27,13 +27,13 @@ atom-notifications {
     display: none;
   }
 
-  atom-notification {
+  lumine-notification {
     .close-all {
       display: none;
     }
   }
 
-  atom-notification:first-child {
+  lumine-notification:first-child {
     .close-all {
       display: block;
     }
@@ -42,7 +42,7 @@ atom-notifications {
     }
   }
 
-  atom-notification:only-child {
+  lumine-notification:only-child {
     .close-all {
       display: none;
     }
@@ -54,7 +54,7 @@ atom-notifications {
     }
   }
 
-  atom-notification {
+  lumine-notification {
     float: right;
     clear: right;
     position: relative;
@@ -232,9 +232,9 @@ atom-notifications {
    Each type expands the former .notification(@txt; @bg) Less mixin with its
    text/background contract variables. */
 
-atom-notifications {
-  atom-notification.fatal,
-  atom-notification.error {
+lumine-notifications {
+  lumine-notification.fatal,
+  lumine-notification.error {
     .content {
       color: hsl(from var(--text-color-error) h s calc(l - 40));
       background-color: hsl(from var(--background-color-error) h s calc(l + 25));
@@ -272,7 +272,7 @@ atom-notifications {
     }
   }
 
-  atom-notification.warning {
+  lumine-notification.warning {
     .content {
       color: hsl(from var(--text-color-warning) h s calc(l - 40));
       background-color: hsl(from var(--background-color-warning) h s calc(l + 25));
@@ -312,7 +312,7 @@ atom-notifications {
     }
   }
 
-  atom-notification.info {
+  lumine-notification.info {
     .content {
       color: hsl(from var(--text-color-info) h s calc(l - 40));
       background-color: hsl(from var(--background-color-info) h s calc(l + 25));
@@ -350,7 +350,7 @@ atom-notifications {
     }
   }
 
-  atom-notification.success {
+  lumine-notification.success {
     .content {
       color: hsl(from var(--text-color-success) h s calc(l - 40));
       background-color: hsl(from var(--background-color-success) h s calc(l + 25));
@@ -393,7 +393,7 @@ atom-notifications {
 
 /* Animations ------------------------------- */
 
-atom-notifications atom-notification {
+lumine-notifications lumine-notification {
   -webkit-animation: notification-show 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.27499);
 
   &[type="fatal"] {

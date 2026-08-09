@@ -15,7 +15,7 @@ To install `notifications` search for _notifications_ in the Install pane of the
 
 ## Commands
 
-Commands available in `atom-workspace`:
+Commands available in `lumine-workspace`:
 
 - `notifications:toggle-log`: show or hide the notifications log,
 - `notifications:clear-log`: dismiss and clear all notifications.
@@ -25,7 +25,7 @@ Commands available in `atom-workspace`:
 Restyle the notification popups by adding CSS to your `styles.css`:
 
 ```css
-atom-notifications atom-notification {
+lumine-notifications lumine-notification {
   font-size: 1.1em;
   border-radius: 6px;
 }

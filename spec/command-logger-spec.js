@@ -8,7 +8,7 @@
     var dispatch, element, logger, ref;
     ((ref = []), (element = ref[0]), (logger = ref[1]));
     dispatch = function (command) {
-      return atom.commands.dispatch(element, command);
+      return lumine.commands.dispatch(element, command);
     };
     beforeEach(function () {
       element = document.createElement("section");

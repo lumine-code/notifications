@@ -8,7 +8,7 @@
     generateFakeFetchResponses,
     ref;
 
-  Notification = require("atom").Notification;
+  Notification = require("lumine").Notification;
 
   NotificationElement = require("../lib/notification-element");
 
@@ -24,25 +24,25 @@
     var workspaceElement;
     workspaceElement = null;
     beforeEach(function () {
-      workspaceElement = atom.views.getView(atom.workspace);
-      atom.notifications.clear();
+      workspaceElement = lumine.views.getView(lumine.workspace);
+      lumine.notifications.clear();
       jasmine.attachToDOM(workspaceElement);
       waitsForPromise(function () {
-        return atom.packages.activatePackage("notifications");
+        return lumine.packages.activatePackage("notifications");
       });
       return waitsForPromise(function () {
-        return atom.workspace.open(NotificationsLog.prototype.getURI());
+        return lumine.workspace.open(NotificationsLog.prototype.getURI());
       });
     });
     describe("when the package is activated", function () {
-      return it("attaches an atom-notifications element to the dom", function () {
+      return it("attaches an lumine-notifications element to the dom", function () {
         return expect(workspaceElement.querySelector(".notifications-log-items")).toBeDefined();
       });
     });
     describe("when there are notifications before activation", function () {
       beforeEach(function () {
         return waitsForPromise(function () {
-          return atom.packages.deactivatePackage("notifications");
+          return lumine.packages.deactivatePackage("notifications");
         });
       });
       return it("displays all non displayed notifications", function () {
@@ -50,13 +50,13 @@
         warning = new Notification("warning", "Un-displayed warning");
         error = new Notification("error", "Displayed error");
         error.setDisplayed(true);
-        atom.notifications.addNotification(error);
-        atom.notifications.addNotification(warning);
+        lumine.notifications.addNotification(error);
+        lumine.notifications.addNotification(warning);
         waitsForPromise(function () {
-          return atom.packages.activatePackage("notifications");
+          return lumine.packages.activatePackage("notifications");
         });
         waitsForPromise(function () {
-          return atom.workspace.open(NotificationsLog.prototype.getURI());
+          return lumine.workspace.open(NotificationsLog.prototype.getURI());
         });
         return runs(function () {
           var notification, notificationsLogContainer;
@@ -72,12 +72,12 @@
         });
       });
     });
-    describe("when notifications are added to atom.notifications", function () {
+    describe("when notifications are added to lumine.notifications", function () {
       var notificationsLogContainer;
       notificationsLogContainer = null;
       beforeEach(function () {
         var enableInitNotification;
-        enableInitNotification = atom.notifications.addSuccess(
+        enableInitNotification = lumine.notifications.addSuccess(
           "A message to trigger initialization",
           {
             dismissable: true,
@@ -92,27 +92,27 @@
       });
       it("adds an .notifications-log-item element to the container with a class corresponding to the type", function () {
         var notification;
-        atom.notifications.addSuccess("A message");
+        lumine.notifications.addSuccess("A message");
         notification = notificationsLogContainer.querySelector(".notifications-log-item.success");
         expect(notificationsLogContainer.childNodes).toHaveLength(2);
         expect(notification.querySelector(".message").textContent.trim()).toBe("A message");
         expect(notification.querySelector(".btn-toolbar")).toBeEmpty();
-        atom.notifications.addInfo("A message");
+        lumine.notifications.addInfo("A message");
         expect(notificationsLogContainer.childNodes).toHaveLength(3);
         expect(
           notificationsLogContainer.querySelector(".notifications-log-item.info"),
         ).toBeDefined();
-        atom.notifications.addWarning("A message");
+        lumine.notifications.addWarning("A message");
         expect(notificationsLogContainer.childNodes).toHaveLength(4);
         expect(
           notificationsLogContainer.querySelector(".notifications-log-item.warning"),
         ).toBeDefined();
-        atom.notifications.addError("A message");
+        lumine.notifications.addError("A message");
         expect(notificationsLogContainer.childNodes).toHaveLength(5);
         expect(
           notificationsLogContainer.querySelector(".notifications-log-item.error"),
         ).toBeDefined();
-        atom.notifications.addFatalError("A message");
+        lumine.notifications.addFatalError("A message");
         notification = notificationsLogContainer.querySelector(".notifications-log-item.fatal");
         expect(notificationsLogContainer.childNodes).toHaveLength(6);
         expect(notification).toBeDefined();
@@ -122,7 +122,7 @@
         return it("displays the buttons in the .btn-toolbar element", function () {
           var btnOne, btnTwo, clicked, notification;
           clicked = [];
-          atom.notifications.addSuccess("A message", {
+          lumine.notifications.addSuccess("A message", {
             buttons: [
               {
                 text: "Button One",
@@ -158,7 +158,7 @@
         fatalError = null;
         describe("when the there is an error searching for the issue", function () {
           beforeEach(function () {
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses({
               issuesErrorResponse: "403",
             });
@@ -189,7 +189,7 @@
             spyOn(UserUtilities, "getPackageVersionShippedWithLumine").andCallFake(function () {
               return versionShippedWithLumine;
             });
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             spyOn(NotificationIssue.prototype, "getPackageName").andCallFake(function () {
               return "somepackage";
@@ -209,7 +209,7 @@
         });
         return describe("when the error has been reported", function () {
           beforeEach(function () {
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses({
               issuesResponse: {
                 items: [
@@ -247,8 +247,8 @@
         describe("when the notification is not dismissed", function () {
           return describe("when the notification is not dismissable", function () {
             beforeEach(function () {
-              notification = atom.notifications.addInfo("A message");
-              notificationView = atom.views.getView(notification);
+              notification = lumine.notifications.addInfo("A message");
+              notificationView = lumine.views.getView(notification);
               return (logItem = notificationsLogContainer.querySelector(
                 ".notifications-log-item.info",
               ));
@@ -265,10 +265,10 @@
         });
         return describe("when the notification is dismissed", function () {
           beforeEach(function () {
-            notification = atom.notifications.addInfo("A message", {
+            notification = lumine.notifications.addInfo("A message", {
               dismissable: true,
             });
-            notificationView = atom.views.getView(notification);
+            notificationView = lumine.views.getView(notification);
             logItem = notificationsLogContainer.querySelector(".notifications-log-item.info");
             notification.dismiss();
             return advanceClock(NotificationElement.prototype.animationDuration);
@@ -306,16 +306,16 @@
       beforeEach(function () {
         var clearButton;
         clearButton = workspaceElement.querySelector(".notifications-log .notifications-clear-log");
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           dismissable: true,
         });
-        atom.notifications.addInfo("non-dismissable");
+        lumine.notifications.addInfo("non-dismissable");
         return clearButton.click();
       });
       return it("clears the notifications", function () {
         var logItems, notifications;
-        expect(atom.notifications.getNotifications()).toHaveLength(0);
-        notifications = workspaceElement.querySelector("atom-notifications");
+        expect(lumine.notifications.getNotifications()).toHaveLength(0);
+        notifications = workspaceElement.querySelector("lumine-notifications");
         advanceClock(NotificationElement.prototype.animationDuration);
         expect(notifications.children).toHaveLength(0);
         logItems = workspaceElement.querySelector(".notifications-log-items");
@@ -326,15 +326,15 @@
       var notificationsLogPane;
       notificationsLogPane = null;
       beforeEach(function () {
-        return (notificationsLogPane = atom.workspace.paneForURI(
+        return (notificationsLogPane = lumine.workspace.paneForURI(
           NotificationsLog.prototype.getURI(),
         ));
       });
       return describe("when notifications:toggle-log is dispatched", function () {
         it("toggles the pane URI", function () {
-          spyOn(atom.workspace, "toggle");
-          atom.commands.dispatch(workspaceElement, "notifications:toggle-log");
-          return expect(atom.workspace.toggle).toHaveBeenCalledWith(
+          spyOn(lumine.workspace, "toggle");
+          lumine.commands.dispatch(workspaceElement, "notifications:toggle-log");
+          return expect(lumine.workspace.toggle).toHaveBeenCalledWith(
             NotificationsLog.prototype.getURI(),
           );
         });
@@ -346,7 +346,7 @@
             var notificationsLog;
             notificationsLog = [][0];
             waitsForPromise(function () {
-              return atom.workspace
+              return lumine.workspace
                 .toggle(NotificationsLog.prototype.getURI())
                 .then(function (paneItem) {
                   return (notificationsLog = paneItem);
@@ -358,11 +358,11 @@
           });
           return describe("when notifications are displayed", function () {
             beforeEach(function () {
-              return atom.notifications.addSuccess("success");
+              return lumine.notifications.addSuccess("success");
             });
             return it("lists all notifications", function () {
               waitsForPromise(function () {
-                return atom.workspace.toggle(NotificationsLog.prototype.getURI());
+                return lumine.workspace.toggle(NotificationsLog.prototype.getURI());
               });
               return runs(function () {
                 var notificationsLogContainer;
@@ -376,13 +376,13 @@
         });
         describe("when the pane is hidden", function () {
           beforeEach(function () {
-            return atom.workspace.hide(NotificationsLog.prototype.getURI());
+            return lumine.workspace.hide(NotificationsLog.prototype.getURI());
           });
           return it("opens the pane", function () {
             var notificationsLog;
             notificationsLog = [][0];
             waitsForPromise(function () {
-              return atom.workspace
+              return lumine.workspace
                 .toggle(NotificationsLog.prototype.getURI())
                 .then(function (paneItem) {
                   return (notificationsLog = paneItem);
@@ -396,14 +396,14 @@
         return describe("when the pane is open", function () {
           beforeEach(function () {
             return waitsForPromise(function () {
-              return atom.workspace.open(NotificationsLog.prototype.getURI());
+              return lumine.workspace.open(NotificationsLog.prototype.getURI());
             });
           });
           return it("closes the pane", function () {
             var notificationsLog;
             notificationsLog = null;
             waitsForPromise(function () {
-              return atom.workspace
+              return lumine.workspace
                 .toggle(NotificationsLog.prototype.getURI())
                 .then(function (paneItem) {
                   return (notificationsLog = paneItem);

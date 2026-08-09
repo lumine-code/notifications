@@ -17,7 +17,7 @@
 
   temp = require("@lumine-code/temp").track();
 
-  Notification = require("atom").Notification;
+  Notification = require("lumine").Notification;
 
   NotificationElement = require("../lib/notification-element");
 
@@ -33,22 +33,22 @@
     var activationPromise, ref1, workspaceElement;
     ((ref1 = []), (workspaceElement = ref1[0]), (activationPromise = ref1[1]));
     beforeEach(function () {
-      workspaceElement = atom.views.getView(atom.workspace);
-      atom.notifications.clear();
-      activationPromise = atom.packages.activatePackage("notifications");
+      workspaceElement = lumine.views.getView(lumine.workspace);
+      lumine.notifications.clear();
+      activationPromise = lumine.packages.activatePackage("notifications");
       return waitsForPromise(function () {
         return activationPromise;
       });
     });
     describe("when the package is activated", function () {
-      return it("attaches an atom-notifications element to the dom", function () {
-        return expect(workspaceElement.querySelector("atom-notifications")).toBeDefined();
+      return it("attaches an lumine-notifications element to the dom", function () {
+        return expect(workspaceElement.querySelector("lumine-notifications")).toBeDefined();
       });
     });
     describe("when there are notifications before activation", function () {
       beforeEach(function () {
         return waitsForPromise(function () {
-          return Promise.resolve(atom.packages.deactivatePackage("notifications"));
+          return Promise.resolve(lumine.packages.deactivatePackage("notifications"));
         });
       });
       return it("displays all non displayed notifications", function () {
@@ -56,28 +56,28 @@
         warning = new Notification("warning", "Un-displayed warning");
         error = new Notification("error", "Displayed error");
         error.setDisplayed(true);
-        atom.notifications.addNotification(error);
-        atom.notifications.addNotification(warning);
-        activationPromise = atom.packages.activatePackage("notifications");
+        lumine.notifications.addNotification(error);
+        lumine.notifications.addNotification(warning);
+        activationPromise = lumine.packages.activatePackage("notifications");
         waitsForPromise(function () {
           return activationPromise;
         });
         return runs(function () {
           var notification, notificationContainer;
-          notificationContainer = workspaceElement.querySelector("atom-notifications");
-          notification = notificationContainer.querySelector("atom-notification.warning");
+          notificationContainer = workspaceElement.querySelector("lumine-notifications");
+          notification = notificationContainer.querySelector("lumine-notification.warning");
           expect(notification).toExist();
-          notification = notificationContainer.querySelector("atom-notification.error");
+          notification = notificationContainer.querySelector("lumine-notification.error");
           return expect(notification).not.toExist();
         });
       });
     });
-    return describe("when notifications are added to atom.notifications", function () {
+    return describe("when notifications are added to lumine.notifications", function () {
       var notificationContainer;
       notificationContainer = null;
       beforeEach(function () {
         var enableInitNotification;
-        enableInitNotification = atom.notifications.addSuccess(
+        enableInitNotification = lumine.notifications.addSuccess(
           "A message to trigger initialization",
           {
             dismissable: true,
@@ -86,57 +86,59 @@
         enableInitNotification.dismiss();
         advanceClock(NotificationElement.prototype.visibilityDuration);
         advanceClock(NotificationElement.prototype.animationDuration);
-        notificationContainer = workspaceElement.querySelector("atom-notifications");
+        notificationContainer = workspaceElement.querySelector("lumine-notifications");
         jasmine.attachToDOM(workspaceElement);
         return generateFakeFetchResponses();
       });
-      it("adds an atom-notification element to the container with a class corresponding to the type", function () {
+      it("adds an lumine-notification element to the container with a class corresponding to the type", function () {
         var notification;
         expect(notificationContainer.childNodes.length).toBe(0);
-        atom.notifications.addSuccess("A message");
-        notification = notificationContainer.querySelector("atom-notification.success");
+        lumine.notifications.addSuccess("A message");
+        notification = notificationContainer.querySelector("lumine-notification.success");
         expect(notificationContainer.childNodes.length).toBe(1);
         expect(notification).toHaveClass("success");
         expect(notification.querySelector(".message").textContent.trim()).toBe("A message");
         expect(notification.querySelector(".meta")).not.toBeVisible();
-        atom.notifications.addInfo("A message");
+        lumine.notifications.addInfo("A message");
         expect(notificationContainer.childNodes.length).toBe(2);
-        expect(notificationContainer.querySelector("atom-notification.info")).toBeDefined();
-        atom.notifications.addWarning("A message");
+        expect(notificationContainer.querySelector("lumine-notification.info")).toBeDefined();
+        lumine.notifications.addWarning("A message");
         expect(notificationContainer.childNodes.length).toBe(3);
-        expect(notificationContainer.querySelector("atom-notification.warning")).toBeDefined();
-        atom.notifications.addError("A message");
+        expect(notificationContainer.querySelector("lumine-notification.warning")).toBeDefined();
+        lumine.notifications.addError("A message");
         expect(notificationContainer.childNodes.length).toBe(4);
-        expect(notificationContainer.querySelector("atom-notification.error")).toBeDefined();
-        atom.notifications.addFatalError("A message");
+        expect(notificationContainer.querySelector("lumine-notification.error")).toBeDefined();
+        lumine.notifications.addFatalError("A message");
         expect(notificationContainer.childNodes.length).toBe(5);
-        return expect(notificationContainer.querySelector("atom-notification.fatal")).toBeDefined();
+        return expect(
+          notificationContainer.querySelector("lumine-notification.fatal"),
+        ).toBeDefined();
       });
       it("displays notification with a detail when a detail is specified", function () {
         var notification;
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           detail: "Some detail",
         });
         notification = notificationContainer.childNodes[0];
         expect(notification.querySelector(".detail").textContent).toContain("Some detail");
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           detail: null,
         });
         notification = notificationContainer.childNodes[1];
         expect(notification.querySelector(".detail")).not.toBeVisible();
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           detail: 1,
         });
         notification = notificationContainer.childNodes[2];
         expect(notification.querySelector(".detail").textContent).toContain("1");
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           detail: {
             something: "ok",
           },
         });
         notification = notificationContainer.childNodes[3];
         expect(notification.querySelector(".detail").textContent).toContain("Object");
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           detail: ["cats", "ok"],
         });
         notification = notificationContainer.childNodes[4];
@@ -144,15 +146,15 @@
       });
       it("does not add the has-stack class if a stack is provided without any detail", function () {
         var notificationElement;
-        atom.notifications.addInfo("A message", {
+        lumine.notifications.addInfo("A message", {
           stack: "Some stack",
         });
-        notificationElement = notificationContainer.querySelector("atom-notification.info");
+        notificationElement = notificationContainer.querySelector("lumine-notification.info");
         return expect(notificationElement).not.toHaveClass("has-stack");
       });
       it("renders the message as sanitized markdown", function () {
         var notification;
-        atom.notifications.addInfo("test <b>html</b> <iframe>but sanitized</iframe>");
+        lumine.notifications.addInfo("test <b>html</b> <iframe>but sanitized</iframe>");
         notification = notificationContainer.childNodes[0];
         return expect(notification.querySelector(".message").innerHTML).toContain(
           "test <b>html</b> ",
@@ -161,10 +163,10 @@
       describe("when a dismissable notification is added", function () {
         it("is removed when Notification::dismiss() is called", function () {
           var notification, notificationElement;
-          notification = atom.notifications.addSuccess("A message", {
+          notification = lumine.notifications.addSuccess("A message", {
             dismissable: true,
           });
-          notificationElement = notificationContainer.querySelector("atom-notification.success");
+          notificationElement = notificationContainer.querySelector("lumine-notification.success");
           expect(notificationContainer.childNodes.length).toBe(1);
           notification.dismiss();
           advanceClock(NotificationElement.prototype.visibilityDuration);
@@ -175,14 +177,16 @@
         it("is removed when the close icon is clicked", function () {
           jasmine.attachToDOM(workspaceElement);
           waitsForPromise(function () {
-            return atom.workspace.open();
+            return lumine.workspace.open();
           });
           return runs(function () {
             var notificationElement;
-            atom.notifications.addSuccess("A message", {
+            lumine.notifications.addSuccess("A message", {
               dismissable: true,
             });
-            notificationElement = notificationContainer.querySelector("atom-notification.success");
+            notificationElement = notificationContainer.querySelector(
+              "lumine-notification.success",
+            );
             expect(notificationContainer.childNodes.length).toBe(1);
             notificationElement.focus();
             notificationElement.querySelector(".close.icon").click();
@@ -194,12 +198,12 @@
         });
         it("is removed when core:cancel is triggered", function () {
           var notificationElement;
-          atom.notifications.addSuccess("A message", {
+          lumine.notifications.addSuccess("A message", {
             dismissable: true,
           });
-          notificationElement = notificationContainer.querySelector("atom-notification.success");
+          notificationElement = notificationContainer.querySelector("lumine-notification.success");
           expect(notificationContainer.childNodes.length).toBe(1);
-          atom.commands.dispatch(workspaceElement, "core:cancel");
+          lumine.commands.dispatch(workspaceElement, "core:cancel");
           advanceClock(NotificationElement.prototype.visibilityDuration * 3);
           expect(notificationElement).toHaveClass("remove");
           advanceClock(NotificationElement.prototype.animationDuration * 3);
@@ -208,17 +212,17 @@
         return it("focuses the active pane only if the dismissed notification has focus", function () {
           jasmine.attachToDOM(workspaceElement);
           waitsForPromise(function () {
-            return atom.workspace.open();
+            return lumine.workspace.open();
           });
           return runs(function () {
             var notification1, notificationElement2;
-            notification1 = atom.notifications.addSuccess("First message", {
+            notification1 = lumine.notifications.addSuccess("First message", {
               dismissable: true,
             });
-            atom.notifications.addError("Second message", {
+            lumine.notifications.addError("Second message", {
               dismissable: true,
             });
-            notificationElement2 = notificationContainer.querySelector("atom-notification.error");
+            notificationElement2 = notificationContainer.querySelector("lumine-notification.error");
             expect(notificationContainer.childNodes.length).toBe(2);
             notificationElement2.focus();
             notification1.dismiss();
@@ -230,7 +234,9 @@
             advanceClock(NotificationElement.prototype.visibilityDuration);
             advanceClock(NotificationElement.prototype.animationDuration);
             expect(notificationContainer.childNodes.length).toBe(0);
-            return expect(atom.views.getView(atom.workspace.getActiveTextEditor())).toHaveFocus();
+            return expect(
+              lumine.views.getView(lumine.workspace.getActiveTextEditor()),
+            ).toHaveFocus();
           });
         });
       });
@@ -238,8 +244,10 @@
         var model, notification, ref2;
         ((ref2 = []), (notification = ref2[0]), (model = ref2[1]));
         beforeEach(function () {
-          model = atom.notifications.addSuccess("A message");
-          return (notification = notificationContainer.querySelector("atom-notification.success"));
+          model = lumine.notifications.addSuccess("A message");
+          return (notification = notificationContainer.querySelector(
+            "lumine-notification.success",
+          ));
         });
         it("closes and removes the message after a given amount of time", function () {
           expect(notification).not.toHaveClass("remove");
@@ -268,9 +276,11 @@
         var notification;
         notification = [][0];
         beforeEach(function () {
-          atom.config.set("notifications.defaultTimeout", 1000);
-          atom.notifications.addSuccess("A message");
-          return (notification = notificationContainer.querySelector("atom-notification.success"));
+          lumine.config.set("notifications.defaultTimeout", 1000);
+          lumine.notifications.addSuccess("A message");
+          return (notification = notificationContainer.querySelector(
+            "lumine-notification.success",
+          ));
         });
         return it("uses the setting value for the autoclose timeout", function () {
           expect(notification).not.toHaveClass("remove");
@@ -281,23 +291,25 @@
       describe("when the `description` option is used", function () {
         return it("displays the description text in the .description element", function () {
           var notification;
-          atom.notifications.addSuccess("A message", {
-            description: "This is [a link](http://atom.io)",
+          lumine.notifications.addSuccess("A message", {
+            description: "This is [a link](https://example.com)",
           });
-          notification = notificationContainer.querySelector("atom-notification.success");
+          notification = notificationContainer.querySelector("lumine-notification.success");
           expect(notification).toHaveClass("has-description");
           expect(notification.querySelector(".meta")).toBeVisible();
           expect(notification.querySelector(".description").textContent.trim()).toBe(
             "This is a link",
           );
-          return expect(notification.querySelector(".description a").href).toBe("http://atom.io/");
+          return expect(notification.querySelector(".description a").href).toBe(
+            "https://example.com/",
+          );
         });
       });
       describe("when the `buttons` options is used", function () {
         return it("displays the buttons in the .description element", function () {
           var btnOne, btnTwo, clicked, notification;
           clicked = [];
-          atom.notifications.addSuccess("A message", {
+          lumine.notifications.addSuccess("A message", {
             buttons: [
               {
                 text: "Button One",
@@ -315,7 +327,7 @@
               },
             ],
           });
-          notification = notificationContainer.querySelector("atom-notification.success");
+          notification = notificationContainer.querySelector("lumine-notification.success");
           expect(notification).toHaveClass("has-buttons");
           expect(notification.querySelector(".meta")).toBeVisible();
           btnOne = notification.querySelector(".btn-one");
@@ -338,10 +350,10 @@
           (issueBody = ref2[3]));
         describe("when the editor is in dev mode", function () {
           beforeEach(function () {
-            spyOn(atom.window, "isDevMode").andReturn(true);
+            spyOn(lumine.window, "isDevMode").andReturn(true);
             generateException();
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("does not display a notification", function () {
             expect(notificationContainer.childNodes.length).toBe(0);
@@ -351,10 +363,10 @@
         describe("when the exception has no core or package paths in the stack trace", function () {
           return it("does not display a notification", function () {
             var handler;
-            atom.notifications.clear();
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            lumine.notifications.clear();
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             handler = jasmine.createSpy("onWillThrowErrorHandler");
-            atom.runtime.onWillThrowError(handler);
+            lumine.runtime.onWillThrowError(handler);
             fs.readFile(__dirname, function () {
               var err;
               err = new Error();
@@ -366,7 +378,7 @@
               return handler.callCount === 1;
             });
             return runs(function () {
-              return expect(atom.notifications.getNotifications().length).toBe(0);
+              return expect(lumine.notifications.getNotifications().length).toBe(0);
             });
           });
         });
@@ -375,9 +387,9 @@
             var message;
             message =
               "Uncaught Error: Cannot read property 'object' of undefined\nTypeError: Cannot read property 'object' of undefined";
-            atom.notifications.addFatalError(message);
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            fatalError = notificationContainer.querySelector("atom-notification.fatal");
+            lumine.notifications.addFatalError(message);
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            fatalError = notificationContainer.querySelector("lumine-notification.fatal");
             waitsForPromise(function () {
               return fatalError.getRenderPromise().then(function () {
                 return (issueTitle = fatalError.issue.getIssueTitle());
@@ -395,9 +407,9 @@
           return it("removes the newlines when generating the issue title", function () {
             var message;
             message = "Uncaught Error: Cannot do the thing\n\nSuper sorry about this";
-            atom.notifications.addFatalError(message);
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            fatalError = notificationContainer.querySelector("atom-notification.fatal");
+            lumine.notifications.addFatalError(message);
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            fatalError = notificationContainer.querySelector("lumine-notification.fatal");
             waitsForPromise(function () {
               return fatalError.getRenderPromise().then(function () {
                 return (issueTitle = fatalError.issue.getIssueTitle());
@@ -414,20 +426,20 @@
           beforeEach(function () {
             var detail, stack;
             stack =
-              "TypeError: undefined is not a function\n  at Object.module.exports.Pane.promptToSaveItem [as defaultSavePrompt] (/Applications/Lumine.app/Contents/Resources/app/src/pane.js:490:23)\n  at Pane.promptToSaveItem (/Users/someguy/.atom/packages/save-session/lib/save-prompt.coffee:21:15)\n  at Pane.module.exports.Pane.destroyItem (/Applications/Lumine.app/Contents/Resources/app/src/pane.js:442:18)\n  at HTMLDivElement.<anonymous> (/Applications/Lumine.app/Contents/Resources/app/node_modules/tabs/lib/tab-bar-view.js:174:22)\n  at space-pen-ul.jQuery.event.dispatch (/Applications/Lumine.app/Contents/Resources/app/node_modules/archive-view/node_modules/atom-space-pen-views/node_modules/space-pen/vendor/jquery.js:4676:9)\n  at space-pen-ul.elemData.handle (/Applications/Lumine.app/Contents/Resources/app/node_modules/archive-view/node_modules/atom-space-pen-views/node_modules/space-pen/vendor/jquery.js:4360:46)";
+              "TypeError: undefined is not a function\n  at Object.module.exports.Pane.promptToSaveItem [as defaultSavePrompt] (/Applications/Lumine.app/Contents/Resources/app/src/pane.js:490:23)\n  at Pane.promptToSaveItem (/Users/someguy/.lumine/packages/save-session/lib/save-prompt.coffee:21:15)\n  at Pane.module.exports.Pane.destroyItem (/Applications/Lumine.app/Contents/Resources/app/src/pane.js:442:18)\n  at HTMLDivElement.<anonymous> (/Applications/Lumine.app/Contents/Resources/app/node_modules/tabs/lib/tab-bar-view.js:174:22)\n  at space-pen-ul.jQuery.event.dispatch (/Applications/Lumine.app/Contents/Resources/app/node_modules/archive-view/node_modules/legacy-views/node_modules/space-pen/vendor/jquery.js:4676:9)\n  at space-pen-ul.elemData.handle (/Applications/Lumine.app/Contents/Resources/app/node_modules/archive-view/node_modules/legacy-views/node_modules/space-pen/vendor/jquery.js:4360:46)";
             detail = "ok";
-            atom.notifications.addFatalError("TypeError: undefined", {
+            lumine.notifications.addFatalError("TypeError: undefined", {
               detail: detail,
               stack: stack,
             });
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            fatalError = notificationContainer.querySelector("atom-notification.fatal");
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            fatalError = notificationContainer.querySelector("lumine-notification.fatal");
             spyOn(fs, "realpathSync").andCallFake(function (p) {
               return p;
             });
             return spyOn(fatalError.issue, "getPackagePathsByPackageName").andCallFake(function () {
               return {
-                "save-session": "/Users/someguy/.atom/packages/save-session",
+                "save-session": "/Users/someguy/.lumine/packages/save-session",
                 tabs: "/Applications/Lumine.app/Contents/Resources/app/node_modules/tabs",
               };
             });
@@ -440,14 +452,14 @@
           beforeEach(function () {
             issueTitle = null;
             issueBody = null;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             spyOn(UserUtils, "getPackageVersionShippedWithLumine").andCallFake(function () {
               return "0.0.0";
             });
             generateException();
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           it("displays a fatal error with the package name in the error", function () {
             waitsForPromise(function () {
@@ -496,7 +508,7 @@
           beforeEach(function () {
             var e, errMsg, home;
             issueTitle = null;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -507,8 +519,8 @@
               errMsg = e.toString() + " in " + home + path.sep + "somewhere";
               window.onerror.call(window, errMsg, "/dev/null", 2, 3, e);
             }
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("replaces the directory with a ~", function () {
             waitsForPromise(function () {
@@ -529,17 +541,17 @@
         describe("when an exception is thrown from a linked package", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             // Resolve the temp directory to its real path: on macOS the temp
             // root is itself a symlink (/var -> /private/var), which would make
             // the package-name lookup miss the realpathed stack frames.
             packagesDir = path.join(
-              fs.realpathSync(temp.mkdirSync("atom-packages-")),
-              ".atom",
+              fs.realpathSync(temp.mkdirSync("lumine-packages-")),
+              ".lumine",
               "packages",
             );
-            atom.packages.packageDirPaths.push(packagesDir);
+            lumine.packages.packageDirPaths.push(packagesDir);
             packageDir = path.join(packagesDir, "..", "..", "github", "linked-package");
             fs.makeTreeSync(path.dirname(path.join(packagesDir, "linked-package")));
             fs.symlinkSync(packageDir, path.join(packagesDir, "linked-package"), "junction");
@@ -547,27 +559,27 @@
               path.join(packageDir, "package.json"),
               '{\n  "name": "linked-package",\n  "version": "1.0.0",\n  "repository": "https://github.com/lumine-code/lumine"\n}',
             );
-            atom.packages.enablePackage("linked-package");
+            lumine.packages.enablePackage("linked-package");
             // Build the fake stack from the loaded package's own path — that is
             // the canonical form real crash stacks contain, and the only form
             // guaranteed to match the resolver (on macOS the temp dir has both
             // /var and /private/var spellings).
-            var loadedPackagePath = atom.packages.getLoadedPackage("linked-package").path;
+            var loadedPackagePath = lumine.packages.getLoadedPackage("linked-package").path;
             stack =
               "ReferenceError: path is not defined\n  at Object.module.exports.LinkedPackage.wow (" +
               path.join(loadedPackagePath, "linked-package.coffee") +
-              ":29:15)\n  at atom-workspace.subscriptions.add.atom.commands.add.linked-package:wow (" +
+              ":29:15)\n  at lumine-workspace.subscriptions.add.lumine.commands.add.linked-package:wow (" +
               path.join(loadedPackagePath, "linked-package.coffee") +
               ":18:102)\n  at CommandRegistry.module.exports.CommandRegistry.handleCommandEvent (/Applications/Lumine.app/Contents/Resources/app/src/command-registry.js:238:29)\n  at /Applications/Lumine.app/Contents/Resources/app/src/command-registry.js:3:61\n  at CommandPaletteView.module.exports.CommandPaletteView.confirmed (/Applications/Lumine.app/Contents/Resources/app/node_modules/command-palette/lib/command-palette-view.js:159:32)";
             detail = "At " + path.join(loadedPackagePath, "linked-package.coffee") + ":41";
             message = "Uncaught ReferenceError: path is not defined";
-            atom.notifications.addFatalError(message, {
+            lumine.notifications.addFatalError(message, {
               stack: stack,
               detail: detail,
               dismissable: true,
             });
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("displays a fatal error with the package name in the error", function () {
             waitsForPromise(function () {
@@ -589,11 +601,11 @@
         describe("when an exception is thrown from an unloaded package", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
-            packagesDir = temp.mkdirSync("atom-packages-");
-            atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
-            packageDir = path.join(packagesDir, ".atom", "packages", "unloaded");
+            packagesDir = temp.mkdirSync("lumine-packages-");
+            lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
+            packageDir = path.join(packagesDir, ".lumine", "packages", "unloaded");
             fs.writeFileSync(
               path.join(packageDir, "package.json"),
               '{\n  "name": "unloaded",\n  "version": "1.0.0",\n  "repository": "https://github.com/lumine-code/lumine"\n}',
@@ -601,13 +613,13 @@
             stack = "Error\n  at " + path.join(packageDir, "index.js") + ":1:1";
             detail = "ReferenceError: unloaded error";
             message = "Error";
-            atom.notifications.addFatalError(message, {
+            lumine.notifications.addFatalError(message, {
               stack: stack,
               detail: detail,
               dismissable: true,
             });
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("displays a fatal error with the package name in the error", function () {
             waitsForPromise(function () {
@@ -627,11 +639,11 @@
         describe("when an exception is thrown from a package trying to load", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
-            packagesDir = temp.mkdirSync("atom-packages-");
-            atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
-            packageDir = path.join(packagesDir, ".atom", "packages", "broken-load");
+            packagesDir = temp.mkdirSync("lumine-packages-");
+            lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
+            packageDir = path.join(packagesDir, ".lumine", "packages", "broken-load");
             fs.writeFileSync(
               path.join(packageDir, "package.json"),
               '{\n  "name": "broken-load",\n  "version": "1.0.0",\n  "repository": "https://github.com/lumine-code/lumine"\n}',
@@ -640,14 +652,14 @@
               "TypeError: Cannot read property 'prototype' of undefined\n  at __extends (<anonymous>:1:1)\n  at Object.defineProperty.value [as .coffee] (/Applications/Lumine.app/Contents/Resources/app.asar/src/compile-cache.js:169:21)";
             detail = "TypeError: Cannot read property 'prototype' of undefined";
             message = "Failed to load the broken-load package";
-            atom.notifications.addFatalError(message, {
+            lumine.notifications.addFatalError(message, {
               stack: stack,
               detail: detail,
               packageName: "broken-load",
               dismissable: true,
             });
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("displays a fatal error with the package name in the error", function () {
             waitsForPromise(function () {
@@ -669,17 +681,17 @@
         describe("when an exception is thrown from a package trying to load a grammar", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
-            packagesDir = temp.mkdirSync("atom-packages-");
-            atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
-            packageDir = path.join(packagesDir, ".atom", "packages", "language-broken-grammar");
+            packagesDir = temp.mkdirSync("lumine-packages-");
+            lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
+            packageDir = path.join(packagesDir, ".lumine", "packages", "language-broken-grammar");
             fs.writeFileSync(
               path.join(packageDir, "package.json"),
               '{\n  "name": "language-broken-grammar",\n  "version": "1.0.0",\n  "repository": "https://github.com/lumine-code/lumine"\n}',
             );
             stack =
-              "Unexpected string\n  at nodeTransforms.Literal (/usr/share/atom/resources/app/node_modules/season/node_modules/cson-parser/lib/parse.js:100:15)\n  at " +
+              "Unexpected string\n  at nodeTransforms.Literal (/usr/share/lumine/resources/app/node_modules/season/node_modules/cson-parser/lib/parse.js:100:15)\n  at " +
               path.join("packageDir", "grammars", "broken-grammar.cson") +
               ":1:1";
             detail =
@@ -687,14 +699,14 @@
               path.join("packageDir", "grammars", "broken-grammar.cson") +
               '\n\nSyntaxError: Syntax error on line 241, column 18: evalmachine.<anonymous>:1\n"#\\{" "end": "\\}"\n       ^^^^^';
             message = "Failed to load a language-broken-grammar package grammar";
-            atom.notifications.addFatalError(message, {
+            lumine.notifications.addFatalError(message, {
               stack: stack,
               detail: detail,
               packageName: "language-broken-grammar",
               dismissable: true,
             });
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("displays a fatal error with the package name in the error", function () {
             waitsForPromise(function () {
@@ -716,11 +728,11 @@
         describe("when an exception is thrown from a package trying to activate", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
-            packagesDir = temp.mkdirSync("atom-packages-");
-            atom.packages.packageDirPaths.push(path.join(packagesDir, ".atom", "packages"));
-            packageDir = path.join(packagesDir, ".atom", "packages", "broken-activation");
+            packagesDir = temp.mkdirSync("lumine-packages-");
+            lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
+            packageDir = path.join(packagesDir, ".lumine", "packages", "broken-activation");
             fs.writeFileSync(
               path.join(packageDir, "package.json"),
               '{\n  "name": "broken-activation",\n  "version": "1.0.0",\n  "repository": "https://github.com/lumine-code/lumine"\n}',
@@ -729,14 +741,14 @@
               "TypeError: Cannot read property 'command' of undefined\n  at Object.module.exports.activate (<anonymous>:7:23)\n  at Package.module.exports.Package.activateNow (/Applications/Lumine.app/Contents/Resources/app.asar/src/package.js:232:19)";
             detail = "TypeError: Cannot read property 'command' of undefined";
             message = "Failed to activate the broken-activation package";
-            atom.notifications.addFatalError(message, {
+            lumine.notifications.addFatalError(message, {
               stack: stack,
               detail: detail,
               packageName: "broken-activation",
               dismissable: true,
             });
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return it("displays a fatal error with the package name in the error", function () {
             waitsForPromise(function () {
@@ -759,7 +771,7 @@
           beforeEach(function () {
             var e, filePath;
             issueBody = null;
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -772,8 +784,8 @@
                 stack: void 0,
               });
             }
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            return (fatalError = notificationContainer.querySelector("atom-notification.fatal"));
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
           return xit("detects the package name from the URL", function () {
             waitsForPromise(function () {
@@ -791,10 +803,10 @@
         describe("when an exception is thrown from core", function () {
           beforeEach(function () {
             var e;
-            atom.commands.dispatch(workspaceElement, "some-package:a-command");
-            atom.commands.dispatch(workspaceElement, "some-package:a-command");
-            atom.commands.dispatch(workspaceElement, "some-package:a-command");
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            lumine.commands.dispatch(workspaceElement, "some-package:a-command");
+            lumine.commands.dispatch(workspaceElement, "some-package:a-command");
+            lumine.commands.dispatch(workspaceElement, "some-package:a-command");
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -806,8 +818,8 @@
                 .replace(/notifications/g, "core");
               window.onerror.call(window, e.toString(), "/dev/null", 2, 3, e);
             }
-            notificationContainer = workspaceElement.querySelector("atom-notifications");
-            fatalError = notificationContainer.querySelector("atom-notification.fatal");
+            notificationContainer = workspaceElement.querySelector("lumine-notifications");
+            fatalError = notificationContainer.querySelector("lumine-notification.fatal");
             return waitsForPromise(function () {
               return fatalError.getRenderPromise().then(function () {
                 return fatalError.issue.getIssueBody().then(function (result) {
@@ -846,12 +858,12 @@
         });
         describe("when the there is an error searching for the issue", function () {
           beforeEach(function () {
-            spyOn(atom.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").andReturn(false);
             generateFakeFetchResponses({
               issuesErrorResponse: "403",
             });
             generateException();
-            fatalError = notificationContainer.querySelector("atom-notification.fatal");
+            fatalError = notificationContainer.querySelector("lumine-notification.fatal");
             return waitsForPromise(function () {
               return fatalError.getRenderPromise().then(function () {
                 return (issueBody = fatalError.issue.issueBody);
@@ -870,12 +882,12 @@
         });
         describe("when the error has not been reported", function () {
           beforeEach(function () {
-            return spyOn(atom.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").andReturn(false);
           });
           return describe("when the message is longer than 100 characters", function () {
             var expectedIssueTitle, message;
             message =
-              "Uncaught Error: Cannot find module 'dialog'Error: Cannot find module 'dialog' at Function.Module._resolveFilename (module.js:351:15) at Function.Module._load (module.js:293:25) at Module.require (module.js:380:17) at EventEmitter.<anonymous> (/Applications/Lumine.app/Contents/Resources/atom/browser/lib/rpc-server.js:128:79) at EventEmitter.emit (events.js:119:17) at EventEmitter.<anonymous> (/Applications/Lumine.app/Contents/Resources/atom/browser/api/lib/web-contents.js:99:23) at EventEmitter.emit (events.js:119:17)";
+              "Uncaught Error: Cannot find module 'dialog'Error: Cannot find module 'dialog' at Function.Module._resolveFilename (module.js:351:15) at Function.Module._load (module.js:293:25) at Module.require (module.js:380:17) at EventEmitter.<anonymous> (/Applications/Lumine.app/Contents/Resources/lumine/browser/lib/rpc-server.js:128:79) at EventEmitter.emit (events.js:119:17) at EventEmitter.<anonymous> (/Applications/Lumine.app/Contents/Resources/lumine/browser/api/lib/web-contents.js:99:23) at EventEmitter.emit (events.js:119:17)";
             expectedIssueTitle =
               "Uncaught Error: Cannot find module 'dialog'Error: Cannot find module 'dialog' at Function.Module....";
             beforeEach(function () {
@@ -892,7 +904,7 @@
               }
             });
             return it("truncates the issue title to 100 characters", function () {
-              fatalError = notificationContainer.querySelector("atom-notification.fatal");
+              fatalError = notificationContainer.querySelector("lumine-notification.fatal");
               waitsForPromise(function () {
                 return fatalError.getRenderPromise();
               });
@@ -913,7 +925,7 @@
             spyOn(UserUtilities, "getPackageVersion").andCallFake(function () {
               return installedVersion;
             });
-            return spyOn(atom.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").andReturn(false);
           });
           // A community package installs from its own Git origin, so nothing here
           // can say whether it is out of date — only a bundled package shadowed by
@@ -928,7 +940,7 @@
                   return versionShippedWithLumine;
                 });
                 generateException();
-                fatalError = notificationContainer.querySelector("atom-notification.fatal");
+                fatalError = notificationContainer.querySelector("lumine-notification.fatal");
                 return waitsForPromise(function () {
                   return fatalError.getRenderPromise().then(function () {
                     return (issueBody = fatalError.issue.issueBody);
@@ -958,7 +970,7 @@
                   return versionShippedWithLumine;
                 });
                 generateException();
-                fatalError = notificationContainer.querySelector("atom-notification.fatal");
+                fatalError = notificationContainer.querySelector("lumine-notification.fatal");
                 return waitsForPromise(function () {
                   return fatalError.getRenderPromise().then(function () {
                     return (issueBody = fatalError.issue.issueBody);
@@ -967,7 +979,7 @@
               });
               return it("ignores the out of date package because they cant upgrade it without upgrading Lumine", function () {
                 var button;
-                fatalError = notificationContainer.querySelector("atom-notification.fatal");
+                fatalError = notificationContainer.querySelector("lumine-notification.fatal");
                 button = fatalError.querySelector(".btn");
                 return expect(button.textContent).toContain("Create issue");
               });
@@ -976,7 +988,7 @@
         });
         describe("when the error has been reported", function () {
           beforeEach(function () {
-            return spyOn(atom.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").andReturn(false);
           });
           describe("when the issue is open", function () {
             beforeEach(function () {
@@ -998,7 +1010,7 @@
                 return "https://github.com/someguy/somepackage";
               });
               generateException();
-              fatalError = notificationContainer.querySelector("atom-notification.fatal");
+              fatalError = notificationContainer.querySelector("lumine-notification.fatal");
               return waitsForPromise(function () {
                 return fatalError.getRenderPromise().then(function () {
                   return (issueBody = fatalError.issue.issueBody);
@@ -1037,7 +1049,7 @@
                 return "https://github.com/someguy/somepackage";
               });
               generateException();
-              fatalError = notificationContainer.querySelector("atom-notification.fatal");
+              fatalError = notificationContainer.querySelector("lumine-notification.fatal");
               return waitsForPromise(function () {
                 return fatalError.getRenderPromise().then(function () {
                   return (issueBody = fatalError.issue.issueBody);
@@ -1055,7 +1067,7 @@
         describe("when a BufferedProcessError is thrown", function () {
           return it("adds an error to the notifications", function () {
             var error;
-            expect(notificationContainer.querySelector("atom-notification.error")).not.toExist();
+            expect(notificationContainer.querySelector("lumine-notification.error")).not.toExist();
             window.onerror(
               "Uncaught BufferedProcessError: Failed to spawn command `bad-command`",
               "abc",
@@ -1065,7 +1077,7 @@
                 name: "BufferedProcessError",
               },
             );
-            error = notificationContainer.querySelector("atom-notification.error");
+            error = notificationContainer.querySelector("lumine-notification.error");
             expect(error).toExist();
             expect(error.innerHTML).toContain("Failed to spawn command");
             return expect(error.innerHTML).not.toContain("BufferedProcessError");
@@ -1073,7 +1085,7 @@
         });
         return describe("when a spawn ENOENT error is thrown", function () {
           beforeEach(function () {
-            return spyOn(atom.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").andReturn(false);
           });
           describe("when the binary has no path", function () {
             beforeEach(function () {
@@ -1084,29 +1096,9 @@
             });
             return it("displays a dismissable error without the stack trace", function () {
               var error;
-              notificationContainer = workspaceElement.querySelector("atom-notifications");
-              error = notificationContainer.querySelector("atom-notification.error");
+              notificationContainer = workspaceElement.querySelector("lumine-notifications");
+              error = notificationContainer.querySelector("lumine-notification.error");
               return expect(error.textContent).toContain("'some_binary' could not be spawned");
-            });
-          });
-          return describe("when the binary has /atom in the path", function () {
-            beforeEach(function () {
-              var e, message;
-              try {
-                // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
-                return a + 1;
-              } catch (error1) {
-                e = error1;
-                e.code = "ENOENT";
-                message = "Error: spawn /opt/atom/Lumine Helper (deleted) ENOENT";
-                return window.onerror.call(window, message, "abc", 2, 3, e);
-              }
-            });
-            return it("displays a fatal error", function () {
-              var error;
-              notificationContainer = workspaceElement.querySelector("atom-notifications");
-              error = notificationContainer.querySelector("atom-notification.fatal");
-              return expect(error).toExist();
             });
           });
         });
