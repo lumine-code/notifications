@@ -26,7 +26,7 @@ bug report purposes.
       }
       // The only remaining network call is the GitHub issue search; package
       // update checks are answered locally.
-      return fetch.andCallFake(function () {
+      return fetch.and.callFake(function () {
         var ref;
         if ((options != null ? options.issuesErrorResponse : void 0) != null) {
           return Promise.reject(options != null ? options.issuesErrorResponse : void 0);

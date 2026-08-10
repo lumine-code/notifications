@@ -23,16 +23,12 @@
   describe("Notifications Log", function () {
     var workspaceElement;
     workspaceElement = null;
-    beforeEach(function () {
+    beforeEach(async () => {
       workspaceElement = lumine.views.getView(lumine.workspace);
       lumine.notifications.clear();
       jasmine.attachToDOM(workspaceElement);
-      waitsForPromise(function () {
-        return lumine.packages.activatePackage("notifications");
-      });
-      return waitsForPromise(function () {
-        return lumine.workspace.open(NotificationsLog.prototype.getURI());
-      });
+      await lumine.packages.activatePackage("notifications");
+      await lumine.workspace.open(NotificationsLog.prototype.getURI());
     });
     describe("when the package is activated", function () {
       return it("attaches an lumine-notifications element to the dom", function () {
@@ -40,36 +36,28 @@
       });
     });
     describe("when there are notifications before activation", function () {
-      beforeEach(function () {
-        return waitsForPromise(function () {
-          return lumine.packages.deactivatePackage("notifications");
-        });
+      beforeEach(async () => {
+        await lumine.packages.deactivatePackage("notifications");
       });
-      return it("displays all non displayed notifications", function () {
+      return it("displays all non displayed notifications", async () => {
         var error, warning;
         warning = new Notification("warning", "Un-displayed warning");
         error = new Notification("error", "Displayed error");
         error.setDisplayed(true);
         lumine.notifications.addNotification(error);
         lumine.notifications.addNotification(warning);
-        waitsForPromise(function () {
-          return lumine.packages.activatePackage("notifications");
-        });
-        waitsForPromise(function () {
-          return lumine.workspace.open(NotificationsLog.prototype.getURI());
-        });
-        return runs(function () {
-          var notification, notificationsLogContainer;
-          notificationsLogContainer = workspaceElement.querySelector(".notifications-log-items");
-          notification = notificationsLogContainer.querySelector(
-            ".notifications-log-notification.warning",
-          );
-          expect(notification).toExist();
-          notification = notificationsLogContainer.querySelector(
-            ".notifications-log-notification.error",
-          );
-          return expect(notification).toExist();
-        });
+        await lumine.packages.activatePackage("notifications");
+        await lumine.workspace.open(NotificationsLog.prototype.getURI());
+        var notification, notificationsLogContainer;
+        notificationsLogContainer = workspaceElement.querySelector(".notifications-log-items");
+        notification = notificationsLogContainer.querySelector(
+          ".notifications-log-notification.warning",
+        );
+        expect(notification).toExist();
+        notification = notificationsLogContainer.querySelector(
+          ".notifications-log-notification.error",
+        );
+        return expect(notification).toExist();
       });
     });
     describe("when notifications are added to lumine.notifications", function () {
@@ -157,16 +145,14 @@
         var fatalError;
         fatalError = null;
         describe("when the there is an error searching for the issue", function () {
-          beforeEach(function () {
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+          beforeEach(async () => {
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses({
               issuesErrorResponse: "403",
             });
             generateException();
             fatalError = notificationsLogContainer.querySelector(".notifications-log-item.fatal");
-            return waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
+            await fatalError.getRenderPromise();
           });
           return it("asks the user to create an issue", function () {
             var button, copyReport;
@@ -178,38 +164,36 @@
           });
         });
         describe("when a locally installed core package is out of date", function () {
-          beforeEach(function () {
+          beforeEach(async () => {
             var UserUtilities, installedVersion, versionShippedWithLumine;
             installedVersion = "0.9.0";
             versionShippedWithLumine = "0.10.0";
             UserUtilities = require("../lib/user-utilities");
-            spyOn(UserUtilities, "getPackageVersion").andCallFake(function () {
+            spyOn(UserUtilities, "getPackageVersion").and.callFake(function () {
               return installedVersion;
             });
-            spyOn(UserUtilities, "getPackageVersionShippedWithLumine").andCallFake(function () {
+            spyOn(UserUtilities, "getPackageVersionShippedWithLumine").and.callFake(function () {
               return versionShippedWithLumine;
             });
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
-            spyOn(NotificationIssue.prototype, "getPackageName").andCallFake(function () {
+            spyOn(NotificationIssue.prototype, "getPackageName").and.callFake(function () {
               return "somepackage";
             });
-            spyOn(NotificationIssue.prototype, "getRepoUrl").andCallFake(function () {
+            spyOn(NotificationIssue.prototype, "getRepoUrl").and.callFake(function () {
               return "https://github.com/someguy/somepackage";
             });
             generateException();
             fatalError = notificationsLogContainer.querySelector(".notifications-log-item.fatal");
-            return waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
+            await fatalError.getRenderPromise();
           });
           return it("removes the Create Issue button", function () {
             return expect(fatalError.querySelector(".btn-issue")).not.toExist();
           });
         });
         return describe("when the error has been reported", function () {
-          beforeEach(function () {
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+          beforeEach(async () => {
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses({
               issuesResponse: {
                 items: [
@@ -221,17 +205,15 @@
                 ],
               },
             });
-            spyOn(NotificationIssue.prototype, "getPackageName").andCallFake(function () {
+            spyOn(NotificationIssue.prototype, "getPackageName").and.callFake(function () {
               return "somepackage";
             });
-            spyOn(NotificationIssue.prototype, "getRepoUrl").andCallFake(function () {
+            spyOn(NotificationIssue.prototype, "getRepoUrl").and.callFake(function () {
               return "https://github.com/someguy/somepackage";
             });
             generateException();
             fatalError = notificationsLogContainer.querySelector(".notifications-log-item.fatal");
-            return waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
+            await fatalError.getRenderPromise();
           });
           return it("shows the user a view issue button", function () {
             var button;
@@ -342,35 +324,24 @@
           beforeEach(function () {
             return notificationsLogPane.destroyItems();
           });
-          it("opens the pane", function () {
+          it("opens the pane", async () => {
             var notificationsLog;
-            notificationsLog = [][0];
-            waitsForPromise(function () {
-              return lumine.workspace
-                .toggle(NotificationsLog.prototype.getURI())
-                .then(function (paneItem) {
-                  return (notificationsLog = paneItem);
-                });
-            });
-            return runs(function () {
-              return expect(notificationsLog).toBeDefined();
-            });
+            const paneItem = await lumine.workspace.toggle(NotificationsLog.prototype.getURI());
+            notificationsLog = paneItem;
+
+            return expect(notificationsLog).toBeDefined();
           });
           return describe("when notifications are displayed", function () {
             beforeEach(function () {
               return lumine.notifications.addSuccess("success");
             });
-            return it("lists all notifications", function () {
-              waitsForPromise(function () {
-                return lumine.workspace.toggle(NotificationsLog.prototype.getURI());
-              });
-              return runs(function () {
-                var notificationsLogContainer;
-                notificationsLogContainer = workspaceElement.querySelector(
-                  ".notifications-log-items",
-                );
-                return expect(notificationsLogContainer.childNodes).toHaveLength(1);
-              });
+            return it("lists all notifications", async () => {
+              await lumine.workspace.toggle(NotificationsLog.prototype.getURI());
+              var notificationsLogContainer;
+              notificationsLogContainer = workspaceElement.querySelector(
+                ".notifications-log-items",
+              );
+              return expect(notificationsLogContainer.childNodes).toHaveLength(1);
             });
           });
         });
@@ -378,40 +349,24 @@
           beforeEach(function () {
             return lumine.workspace.hide(NotificationsLog.prototype.getURI());
           });
-          return it("opens the pane", function () {
+          return it("opens the pane", async () => {
             var notificationsLog;
-            notificationsLog = [][0];
-            waitsForPromise(function () {
-              return lumine.workspace
-                .toggle(NotificationsLog.prototype.getURI())
-                .then(function (paneItem) {
-                  return (notificationsLog = paneItem);
-                });
-            });
-            return runs(function () {
-              return expect(notificationsLog).toBeDefined();
-            });
+            const paneItem = await lumine.workspace.toggle(NotificationsLog.prototype.getURI());
+            notificationsLog = paneItem;
+
+            return expect(notificationsLog).toBeDefined();
           });
         });
         return describe("when the pane is open", function () {
-          beforeEach(function () {
-            return waitsForPromise(function () {
-              return lumine.workspace.open(NotificationsLog.prototype.getURI());
-            });
+          beforeEach(async () => {
+            await lumine.workspace.open(NotificationsLog.prototype.getURI());
           });
-          return it("closes the pane", function () {
+          return it("closes the pane", async () => {
             var notificationsLog;
-            notificationsLog = null;
-            waitsForPromise(function () {
-              return lumine.workspace
-                .toggle(NotificationsLog.prototype.getURI())
-                .then(function (paneItem) {
-                  return (notificationsLog = paneItem);
-                });
-            });
-            return runs(function () {
-              return expect(notificationsLog).not.toBeDefined();
-            });
+            const paneItem = await lumine.workspace.toggle(NotificationsLog.prototype.getURI());
+            notificationsLog = paneItem;
+
+            return expect(notificationsLog).not.toBeDefined();
           });
         });
       });

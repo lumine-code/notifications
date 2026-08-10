@@ -32,13 +32,11 @@
   describe("Notifications", function () {
     var activationPromise, ref1, workspaceElement;
     ((ref1 = []), (workspaceElement = ref1[0]), (activationPromise = ref1[1]));
-    beforeEach(function () {
+    beforeEach(async () => {
       workspaceElement = lumine.views.getView(lumine.workspace);
       lumine.notifications.clear();
       activationPromise = lumine.packages.activatePackage("notifications");
-      return waitsForPromise(function () {
-        return activationPromise;
-      });
+      await activationPromise;
     });
     describe("when the package is activated", function () {
       return it("attaches an lumine-notifications element to the dom", function () {
@@ -46,12 +44,10 @@
       });
     });
     describe("when there are notifications before activation", function () {
-      beforeEach(function () {
-        return waitsForPromise(function () {
-          return Promise.resolve(lumine.packages.deactivatePackage("notifications"));
-        });
+      beforeEach(async () => {
+        await Promise.resolve(lumine.packages.deactivatePackage("notifications"));
       });
-      return it("displays all non displayed notifications", function () {
+      return it("displays all non displayed notifications", async () => {
         var error, warning;
         warning = new Notification("warning", "Un-displayed warning");
         error = new Notification("error", "Displayed error");
@@ -59,17 +55,13 @@
         lumine.notifications.addNotification(error);
         lumine.notifications.addNotification(warning);
         activationPromise = lumine.packages.activatePackage("notifications");
-        waitsForPromise(function () {
-          return activationPromise;
-        });
-        return runs(function () {
-          var notification, notificationContainer;
-          notificationContainer = workspaceElement.querySelector("lumine-notifications");
-          notification = notificationContainer.querySelector("lumine-notification.warning");
-          expect(notification).toExist();
-          notification = notificationContainer.querySelector("lumine-notification.error");
-          return expect(notification).not.toExist();
-        });
+        await activationPromise;
+        var notification, notificationContainer;
+        notificationContainer = workspaceElement.querySelector("lumine-notifications");
+        notification = notificationContainer.querySelector("lumine-notification.warning");
+        expect(notification).toExist();
+        notification = notificationContainer.querySelector("lumine-notification.error");
+        return expect(notification).not.toExist();
       });
     });
     return describe("when notifications are added to lumine.notifications", function () {
@@ -174,27 +166,21 @@
           advanceClock(NotificationElement.prototype.animationDuration);
           return expect(notificationContainer.childNodes.length).toBe(0);
         });
-        it("is removed when the close icon is clicked", function () {
+        it("is removed when the close icon is clicked", async () => {
           jasmine.attachToDOM(workspaceElement);
-          waitsForPromise(function () {
-            return lumine.workspace.open();
+          await lumine.workspace.open();
+          var notificationElement;
+          lumine.notifications.addSuccess("A message", {
+            dismissable: true,
           });
-          return runs(function () {
-            var notificationElement;
-            lumine.notifications.addSuccess("A message", {
-              dismissable: true,
-            });
-            notificationElement = notificationContainer.querySelector(
-              "lumine-notification.success",
-            );
-            expect(notificationContainer.childNodes.length).toBe(1);
-            notificationElement.focus();
-            notificationElement.querySelector(".close.icon").click();
-            advanceClock(NotificationElement.prototype.visibilityDuration);
-            expect(notificationElement).toHaveClass("remove");
-            advanceClock(NotificationElement.prototype.animationDuration);
-            return expect(notificationContainer.childNodes.length).toBe(0);
-          });
+          notificationElement = notificationContainer.querySelector("lumine-notification.success");
+          expect(notificationContainer.childNodes.length).toBe(1);
+          notificationElement.focus();
+          notificationElement.querySelector(".close.icon").click();
+          advanceClock(NotificationElement.prototype.visibilityDuration);
+          expect(notificationElement).toHaveClass("remove");
+          advanceClock(NotificationElement.prototype.animationDuration);
+          return expect(notificationContainer.childNodes.length).toBe(0);
         });
         it("is removed when core:cancel is triggered", function () {
           var notificationElement;
@@ -209,35 +195,29 @@
           advanceClock(NotificationElement.prototype.animationDuration * 3);
           return expect(notificationContainer.childNodes.length).toBe(0);
         });
-        return it("focuses the active pane only if the dismissed notification has focus", function () {
+        return it("focuses the active pane only if the dismissed notification has focus", async () => {
           jasmine.attachToDOM(workspaceElement);
-          waitsForPromise(function () {
-            return lumine.workspace.open();
+          await lumine.workspace.open();
+          var notification1, notificationElement2;
+          notification1 = lumine.notifications.addSuccess("First message", {
+            dismissable: true,
           });
-          return runs(function () {
-            var notification1, notificationElement2;
-            notification1 = lumine.notifications.addSuccess("First message", {
-              dismissable: true,
-            });
-            lumine.notifications.addError("Second message", {
-              dismissable: true,
-            });
-            notificationElement2 = notificationContainer.querySelector("lumine-notification.error");
-            expect(notificationContainer.childNodes.length).toBe(2);
-            notificationElement2.focus();
-            notification1.dismiss();
-            advanceClock(NotificationElement.prototype.visibilityDuration);
-            advanceClock(NotificationElement.prototype.animationDuration);
-            expect(notificationContainer.childNodes.length).toBe(1);
-            expect(notificationElement2).toHaveFocus();
-            notificationElement2.querySelector(".close.icon").click();
-            advanceClock(NotificationElement.prototype.visibilityDuration);
-            advanceClock(NotificationElement.prototype.animationDuration);
-            expect(notificationContainer.childNodes.length).toBe(0);
-            return expect(
-              lumine.views.getView(lumine.workspace.getActiveTextEditor()),
-            ).toHaveFocus();
+          lumine.notifications.addError("Second message", {
+            dismissable: true,
           });
+          notificationElement2 = notificationContainer.querySelector("lumine-notification.error");
+          expect(notificationContainer.childNodes.length).toBe(2);
+          notificationElement2.focus();
+          notification1.dismiss();
+          advanceClock(NotificationElement.prototype.visibilityDuration);
+          advanceClock(NotificationElement.prototype.animationDuration);
+          expect(notificationContainer.childNodes.length).toBe(1);
+          expect(notificationElement2).toHaveFocus();
+          notificationElement2.querySelector(".close.icon").click();
+          advanceClock(NotificationElement.prototype.visibilityDuration);
+          advanceClock(NotificationElement.prototype.animationDuration);
+          expect(notificationContainer.childNodes.length).toBe(0);
+          return expect(lumine.views.getView(lumine.workspace.getActiveTextEditor())).toHaveFocus();
         });
       });
       describe("when an autoclose notification is added", function () {
@@ -350,7 +330,7 @@
           (issueBody = ref2[3]));
         describe("when the editor is in dev mode", function () {
           beforeEach(function () {
-            spyOn(lumine.window, "isDevMode").andReturn(true);
+            spyOn(lumine.window, "isDevMode").and.returnValue(true);
             generateException();
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
@@ -361,10 +341,10 @@
           });
         });
         describe("when the exception has no core or package paths in the stack trace", function () {
-          return it("does not display a notification", function () {
+          return it("does not display a notification", async () => {
             var handler;
             lumine.notifications.clear();
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             handler = jasmine.createSpy("onWillThrowErrorHandler");
             lumine.runtime.onWillThrowError(handler);
             fs.readFile(__dirname, function () {
@@ -374,52 +354,42 @@
                 "FakeError: foo is not bar\n    at blah.fakeFunc (directory/fakefile.js:1:25)";
               throw err;
             });
-            waitsFor(function () {
-              return handler.callCount === 1;
+            await conditionPromise(() => {
+              return handler.calls.count() === 1;
             });
-            return runs(function () {
-              return expect(lumine.notifications.getNotifications().length).toBe(0);
-            });
+            return expect(lumine.notifications.getNotifications().length).toBe(0);
           });
         });
         describe("when the message contains a newline", function () {
-          return it("removes the newline when generating the issue title", function () {
+          return it("removes the newline when generating the issue title", async () => {
             var message;
             message =
               "Uncaught Error: Cannot read property 'object' of undefined\nTypeError: Cannot read property 'object' of undefined";
             lumine.notifications.addFatalError(message);
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                return (issueTitle = fatalError.issue.getIssueTitle());
-              });
-            });
-            return runs(function () {
-              expect(issueTitle).not.toContain("\n");
-              return expect(issueTitle).toBe(
-                "Uncaught Error: Cannot read property 'object' of undefinedTypeError: Cannot read property 'objec...",
-              );
-            });
+            await fatalError.getRenderPromise();
+            issueTitle = fatalError.issue.getIssueTitle();
+
+            expect(issueTitle).not.toContain("\n");
+            return expect(issueTitle).toBe(
+              "Uncaught Error: Cannot read property 'object' of undefinedTypeError: Cannot read property 'objec...",
+            );
           });
         });
         describe("when the message contains continguous newlines", function () {
-          return it("removes the newlines when generating the issue title", function () {
+          return it("removes the newlines when generating the issue title", async () => {
             var message;
             message = "Uncaught Error: Cannot do the thing\n\nSuper sorry about this";
             lumine.notifications.addFatalError(message);
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                return (issueTitle = fatalError.issue.getIssueTitle());
-              });
-            });
-            return runs(function () {
-              return expect(issueTitle).toBe(
-                "Uncaught Error: Cannot do the thingSuper sorry about this",
-              );
-            });
+            await fatalError.getRenderPromise();
+            issueTitle = fatalError.issue.getIssueTitle();
+
+            return expect(issueTitle).toBe(
+              "Uncaught Error: Cannot do the thingSuper sorry about this",
+            );
           });
         });
         describe("when there are multiple packages in the stack trace", function () {
@@ -434,15 +404,17 @@
             });
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-            spyOn(fs, "realpathSync").andCallFake(function (p) {
+            spyOn(fs, "realpathSync").and.callFake(function (p) {
               return p;
             });
-            return spyOn(fatalError.issue, "getPackagePathsByPackageName").andCallFake(function () {
-              return {
-                "save-session": "/Users/someguy/.lumine/packages/save-session",
-                tabs: "/Applications/Lumine.app/Contents/Resources/app/node_modules/tabs",
-              };
-            });
+            return spyOn(fatalError.issue, "getPackagePathsByPackageName").and.callFake(
+              function () {
+                return {
+                  "save-session": "/Users/someguy/.lumine/packages/save-session",
+                  tabs: "/Applications/Lumine.app/Contents/Resources/app/node_modules/tabs",
+                };
+              },
+            );
           });
           return it("chooses the first package in the trace", function () {
             return expect(fatalError.issue.getPackageName()).toBe("save-session");
@@ -452,63 +424,55 @@
           beforeEach(function () {
             issueTitle = null;
             issueBody = null;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
-            spyOn(UserUtils, "getPackageVersionShippedWithLumine").andCallFake(function () {
+            spyOn(UserUtils, "getPackageVersionShippedWithLumine").and.callFake(function () {
               return "0.0.0";
             });
             generateException();
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          it("displays a fatal error with the package name in the error", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                issueTitle = fatalError.issue.getIssueTitle();
-                return fatalError.issue.getIssueBody().then(function (result) {
-                  return (issueBody = result);
-                });
-              });
+          it("displays a fatal error with the package name in the error", async () => {
+            await fatalError.getRenderPromise();
+            issueTitle = fatalError.issue.getIssueTitle();
+            await fatalError.issue.getIssueBody().then(function (result) {
+              return (issueBody = result);
             });
-            return runs(function () {
-              var button;
-              expect(notificationContainer.childNodes.length).toBe(1);
-              expect(fatalError).toHaveClass("has-close");
-              expect(fatalError.innerHTML).toContain("ReferenceError: a is not defined");
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/notifications">notifications package</a>',
-              );
-              expect(fatalError.issue.getPackageName()).toBe("notifications");
-              button = fatalError.querySelector(".btn");
-              expect(button.textContent).toContain("Create issue on the notifications package");
-              expect(issueTitle).toContain("$LUMINE_HOME");
-              expect(issueTitle).not.toContain(process.env.LUMINE_HOME);
-              expect(issueBody).toMatch(/Lumine\*\*: [0-9].[0-9]+.[0-9]+/gi);
-              expect(issueBody).not.toMatch(/Unknown/gi);
-              expect(issueBody).toContain("ReferenceError: a is not defined");
-              expect(issueBody).toContain(
-                "Thrown From**: [notifications](https://github.com/lumine-code/notifications) package ",
-              );
-              return expect(issueBody).toContain("### Non-Core Packages");
-            });
+
+            var button;
+            expect(notificationContainer.childNodes.length).toBe(1);
+            expect(fatalError).toHaveClass("has-close");
+            expect(fatalError.innerHTML).toContain("ReferenceError: a is not defined");
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/notifications">notifications package</a>',
+            );
+            expect(fatalError.issue.getPackageName()).toBe("notifications");
+            button = fatalError.querySelector(".btn");
+            expect(button.textContent).toContain("Create issue on the notifications package");
+            expect(issueTitle).toContain("$LUMINE_HOME");
+            expect(issueTitle).not.toContain(process.env.LUMINE_HOME);
+            expect(issueBody).toMatch(/Lumine\*\*: [0-9].[0-9]+.[0-9]+/gi);
+            expect(issueBody).not.toMatch(/Unknown/gi);
+            expect(issueBody).toContain("ReferenceError: a is not defined");
+            expect(issueBody).toContain(
+              "Thrown From**: [notifications](https://github.com/lumine-code/notifications) package ",
+            );
+            return expect(issueBody).toContain("### Non-Core Packages");
           });
-          return it("standardizes platform separators on #win32", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                return (issueTitle = fatalError.issue.getIssueTitle());
-              });
-            });
-            return runs(function () {
-              expect(issueTitle).toContain(path.posix.sep);
-              return expect(issueTitle).not.toContain(path.win32.sep);
-            });
+          return it("standardizes platform separators on #win32", async () => {
+            await fatalError.getRenderPromise();
+            issueTitle = fatalError.issue.getIssueTitle();
+
+            expect(issueTitle).toContain(path.posix.sep);
+            return expect(issueTitle).not.toContain(path.win32.sep);
           });
         });
         describe("when an exception contains the user's home directory", function () {
           beforeEach(function () {
             var e, errMsg, home;
             issueTitle = null;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -522,26 +486,22 @@
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          return it("replaces the directory with a ~", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                return (issueTitle = fatalError.issue.getIssueTitle());
-              });
-            });
-            return runs(function () {
-              expect(issueTitle).toContain("~");
-              if (process.platform === "win32") {
-                return expect(issueTitle).not.toContain(process.env.USERPROFILE);
-              } else {
-                return expect(issueTitle).not.toContain(process.env.HOME);
-              }
-            });
+          return it("replaces the directory with a ~", async () => {
+            await fatalError.getRenderPromise();
+            issueTitle = fatalError.issue.getIssueTitle();
+
+            expect(issueTitle).toContain("~");
+            if (process.platform === "win32") {
+              return expect(issueTitle).not.toContain(process.env.USERPROFILE);
+            } else {
+              return expect(issueTitle).not.toContain(process.env.HOME);
+            }
           });
         });
         describe("when an exception is thrown from a linked package", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             // Resolve the temp directory to its real path: on macOS the temp
             // root is itself a symlink (/var -> /private/var), which would make
@@ -581,27 +541,21 @@
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          return it("displays a fatal error with the package name in the error", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
-            return runs(function () {
-              expect(notificationContainer.childNodes.length).toBe(1);
-              expect(fatalError).toHaveClass("has-close");
-              expect(fatalError.innerHTML).toContain(
-                "Uncaught ReferenceError: path is not defined",
-              );
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">linked-package package</a>',
-              );
-              return expect(fatalError.issue.getPackageName()).toBe("linked-package");
-            });
+          return it("displays a fatal error with the package name in the error", async () => {
+            await fatalError.getRenderPromise();
+            expect(notificationContainer.childNodes.length).toBe(1);
+            expect(fatalError).toHaveClass("has-close");
+            expect(fatalError.innerHTML).toContain("Uncaught ReferenceError: path is not defined");
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/lumine">linked-package package</a>',
+            );
+            return expect(fatalError.issue.getPackageName()).toBe("linked-package");
           });
         });
         describe("when an exception is thrown from an unloaded package", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("lumine-packages-");
             lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
@@ -621,25 +575,21 @@
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          return it("displays a fatal error with the package name in the error", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
-            return runs(function () {
-              expect(notificationContainer.childNodes.length).toBe(1);
-              expect(fatalError).toHaveClass("has-close");
-              expect(fatalError.innerHTML).toContain("ReferenceError: unloaded error");
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">unloaded package</a>',
-              );
-              return expect(fatalError.issue.getPackageName()).toBe("unloaded");
-            });
+          return it("displays a fatal error with the package name in the error", async () => {
+            await fatalError.getRenderPromise();
+            expect(notificationContainer.childNodes.length).toBe(1);
+            expect(fatalError).toHaveClass("has-close");
+            expect(fatalError.innerHTML).toContain("ReferenceError: unloaded error");
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/lumine">unloaded package</a>',
+            );
+            return expect(fatalError.issue.getPackageName()).toBe("unloaded");
           });
         });
         describe("when an exception is thrown from a package trying to load", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("lumine-packages-");
             lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
@@ -661,27 +611,23 @@
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          return it("displays a fatal error with the package name in the error", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
-            return runs(function () {
-              expect(notificationContainer.childNodes.length).toBe(1);
-              expect(fatalError).toHaveClass("has-close");
-              expect(fatalError.innerHTML).toContain(
-                "TypeError: Cannot read property 'prototype' of undefined",
-              );
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">broken-load package</a>',
-              );
-              return expect(fatalError.issue.getPackageName()).toBe("broken-load");
-            });
+          return it("displays a fatal error with the package name in the error", async () => {
+            await fatalError.getRenderPromise();
+            expect(notificationContainer.childNodes.length).toBe(1);
+            expect(fatalError).toHaveClass("has-close");
+            expect(fatalError.innerHTML).toContain(
+              "TypeError: Cannot read property 'prototype' of undefined",
+            );
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/lumine">broken-load package</a>',
+            );
+            return expect(fatalError.issue.getPackageName()).toBe("broken-load");
           });
         });
         describe("when an exception is thrown from a package trying to load a grammar", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("lumine-packages-");
             lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
@@ -708,27 +654,23 @@
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          return it("displays a fatal error with the package name in the error", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
-            return runs(function () {
-              expect(notificationContainer.childNodes.length).toBe(1);
-              expect(fatalError).toHaveClass("has-close");
-              expect(fatalError.innerHTML).toContain(
-                "Failed to load a language-broken-grammar package grammar",
-              );
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">language-broken-grammar package</a>',
-              );
-              return expect(fatalError.issue.getPackageName()).toBe("language-broken-grammar");
-            });
+          return it("displays a fatal error with the package name in the error", async () => {
+            await fatalError.getRenderPromise();
+            expect(notificationContainer.childNodes.length).toBe(1);
+            expect(fatalError).toHaveClass("has-close");
+            expect(fatalError.innerHTML).toContain(
+              "Failed to load a language-broken-grammar package grammar",
+            );
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/lumine">language-broken-grammar package</a>',
+            );
+            return expect(fatalError.issue.getPackageName()).toBe("language-broken-grammar");
           });
         });
         describe("when an exception is thrown from a package trying to activate", function () {
           beforeEach(function () {
             var detail, message, packageDir, packagesDir, stack;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             packagesDir = temp.mkdirSync("lumine-packages-");
             lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
@@ -750,63 +692,68 @@
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
           });
-          return it("displays a fatal error with the package name in the error", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
-            return runs(function () {
-              expect(notificationContainer.childNodes.length).toBe(1);
-              expect(fatalError).toHaveClass("has-close");
-              expect(fatalError.innerHTML).toContain(
-                "TypeError: Cannot read property 'command' of undefined",
-              );
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">broken-activation package</a>',
-              );
-              return expect(fatalError.issue.getPackageName()).toBe("broken-activation");
-            });
+          return it("displays a fatal error with the package name in the error", async () => {
+            await fatalError.getRenderPromise();
+            expect(notificationContainer.childNodes.length).toBe(1);
+            expect(fatalError).toHaveClass("has-close");
+            expect(fatalError.innerHTML).toContain(
+              "TypeError: Cannot read property 'command' of undefined",
+            );
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/lumine">broken-activation package</a>',
+            );
+            return expect(fatalError.issue.getPackageName()).toBe("broken-activation");
           });
         });
         describe("when an exception is thrown from a package without a trace, but with a URL", function () {
-          beforeEach(function () {
-            var e, filePath;
+          // The original spec threw a real ReferenceError and fed its own stack
+          // frame in, which only resolved to a package name when this checkout
+          // happened to sit under a registered package directory. Registering a
+          // package explicitly tests the detection instead of the environment.
+          beforeEach(async () => {
             issueBody = null;
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
-            try {
-              // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
-              a + 1;
-            } catch (error1) {
-              e = error1;
-              filePath = e.stack.split("\n")[1].match(/\((.+?):\d+/)[1];
-              window.onerror.call(window, e.toString(), filePath, 2, 3, {
-                message: e.toString(),
-                stack: void 0,
-              });
-            }
+
+            const packagesDir = temp.mkdirSync("lumine-packages-");
+            lumine.packages.packageDirPaths.push(path.join(packagesDir, ".lumine", "packages"));
+            const packageDir = path.join(packagesDir, ".lumine", "packages", "url-only");
+            fs.writeFileSync(
+              path.join(packageDir, "package.json"),
+              JSON.stringify({
+                name: "url-only",
+                version: "1.0.0",
+                repository: "https://github.com/lumine-code/lumine",
+              }),
+            );
+            lumine.packages.loadPackage(packageDir);
+
+            const url = path.join(packageDir, "lib", "url-only.js");
+            window.onerror.call(window, "ReferenceError: a is not defined", url, 2, 3, {
+              message: "ReferenceError: a is not defined",
+              stack: void 0,
+            });
+
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
-            return (fatalError = notificationContainer.querySelector("lumine-notification.fatal"));
+            fatalError = notificationContainer.querySelector("lumine-notification.fatal");
           });
-          return xit("detects the package name from the URL", function () {
-            waitsForPromise(function () {
-              return fatalError.getRenderPromise();
-            });
-            return runs(function () {
-              expect(fatalError.innerHTML).toContain("ReferenceError: a is not defined");
-              expect(fatalError.innerHTML).toContain(
-                '<a href="https://github.com/lumine-code/lumine">notifications package</a>',
-              );
-              return expect(fatalError.issue.getPackageName()).toBe("notifications");
-            });
+
+          it("detects the package name from the URL", async () => {
+            await fatalError.getRenderPromise();
+            expect(fatalError.innerHTML).toContain("ReferenceError: a is not defined");
+            expect(fatalError.innerHTML).toContain(
+              '<a href="https://github.com/lumine-code/lumine">url-only package</a>',
+            );
+            expect(fatalError.issue.getPackageName()).toBe("url-only");
           });
         });
         describe("when an exception is thrown from core", function () {
-          beforeEach(function () {
+          beforeEach(async () => {
             var e;
             lumine.commands.dispatch(workspaceElement, "some-package:a-command");
             lumine.commands.dispatch(workspaceElement, "some-package:a-command");
             lumine.commands.dispatch(workspaceElement, "some-package:a-command");
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses();
             try {
               // eslint-disable-next-line no-undef -- intentional ReferenceError for the test
@@ -820,12 +767,9 @@
             }
             notificationContainer = workspaceElement.querySelector("lumine-notifications");
             fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-            return waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                return fatalError.issue.getIssueBody().then(function (result) {
-                  return (issueBody = result);
-                });
-              });
+            await fatalError.getRenderPromise();
+            return fatalError.issue.getIssueBody().then(function (result) {
+              return (issueBody = result);
             });
           });
           it("displays a fatal error with the package name in the error", function () {
@@ -857,18 +801,15 @@
           });
         });
         describe("when the there is an error searching for the issue", function () {
-          beforeEach(function () {
-            spyOn(lumine.window, "isDevMode").andReturn(false);
+          beforeEach(async () => {
+            spyOn(lumine.window, "isDevMode").and.returnValue(false);
             generateFakeFetchResponses({
               issuesErrorResponse: "403",
             });
             generateException();
             fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-            return waitsForPromise(function () {
-              return fatalError.getRenderPromise().then(function () {
-                return (issueBody = fatalError.issue.issueBody);
-              });
-            });
+            await fatalError.getRenderPromise();
+            return (issueBody = fatalError.issue.issueBody);
           });
           return it("asks the user to create an issue", function () {
             var button, fatalNotification;
@@ -882,7 +823,7 @@
         });
         describe("when the error has not been reported", function () {
           beforeEach(function () {
-            return spyOn(lumine.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").and.returnValue(false);
           });
           return describe("when the message is longer than 100 characters", function () {
             var expectedIssueTitle, message;
@@ -903,17 +844,13 @@
                 return window.onerror.call(window, e.message, "abc", 2, 3, e);
               }
             });
-            return it("truncates the issue title to 100 characters", function () {
+            return it("truncates the issue title to 100 characters", async () => {
               fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-              waitsForPromise(function () {
-                return fatalError.getRenderPromise();
-              });
-              return runs(function () {
-                var button;
-                button = fatalError.querySelector(".btn");
-                expect(button.textContent).toContain("Create issue");
-                return expect(fatalError.issue.getIssueTitle()).toBe(expectedIssueTitle);
-              });
+              await fatalError.getRenderPromise();
+              var button;
+              button = fatalError.querySelector(".btn");
+              expect(button.textContent).toContain("Create issue");
+              return expect(fatalError.issue.getIssueTitle()).toBe(expectedIssueTitle);
             });
           });
         });
@@ -922,30 +859,29 @@
             var UserUtilities, installedVersion;
             installedVersion = "0.9.0";
             UserUtilities = require("../lib/user-utilities");
-            spyOn(UserUtilities, "getPackageVersion").andCallFake(function () {
+            spyOn(UserUtilities, "getPackageVersion").and.callFake(function () {
               return installedVersion;
             });
-            return spyOn(lumine.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").and.returnValue(false);
           });
           // A community package installs from its own Git origin, so nothing here
           // can say whether it is out of date — only a bundled package shadowed by
           // an older local copy reports itself out of date.
           return describe("when the package is a core package", function () {
             describe("when the locally installed version is lower than Lumine's version", function () {
-              beforeEach(function () {
+              beforeEach(async () => {
                 var UserUtilities, versionShippedWithLumine;
                 versionShippedWithLumine = "0.10.0";
                 UserUtilities = require("../lib/user-utilities");
-                spyOn(UserUtilities, "getPackageVersionShippedWithLumine").andCallFake(function () {
-                  return versionShippedWithLumine;
-                });
+                spyOn(UserUtilities, "getPackageVersionShippedWithLumine").and.callFake(
+                  function () {
+                    return versionShippedWithLumine;
+                  },
+                );
                 generateException();
                 fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-                return waitsForPromise(function () {
-                  return fatalError.getRenderPromise().then(function () {
-                    return (issueBody = fatalError.issue.issueBody);
-                  });
-                });
+                await fatalError.getRenderPromise();
+                return (issueBody = fatalError.issue.issueBody);
               });
               it("doesn't show the Create Issue button", function () {
                 var button;
@@ -962,20 +898,19 @@
               });
             });
             return describe("when the locally installed version matches Lumine's version", function () {
-              beforeEach(function () {
+              beforeEach(async () => {
                 var UserUtilities, versionShippedWithLumine;
                 versionShippedWithLumine = "0.9.0";
                 UserUtilities = require("../lib/user-utilities");
-                spyOn(UserUtilities, "getPackageVersionShippedWithLumine").andCallFake(function () {
-                  return versionShippedWithLumine;
-                });
+                spyOn(UserUtilities, "getPackageVersionShippedWithLumine").and.callFake(
+                  function () {
+                    return versionShippedWithLumine;
+                  },
+                );
                 generateException();
                 fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-                return waitsForPromise(function () {
-                  return fatalError.getRenderPromise().then(function () {
-                    return (issueBody = fatalError.issue.issueBody);
-                  });
-                });
+                await fatalError.getRenderPromise();
+                return (issueBody = fatalError.issue.issueBody);
               });
               return it("ignores the out of date package because they cant upgrade it without upgrading Lumine", function () {
                 var button;
@@ -988,10 +923,10 @@
         });
         describe("when the error has been reported", function () {
           beforeEach(function () {
-            return spyOn(lumine.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").and.returnValue(false);
           });
           describe("when the issue is open", function () {
-            beforeEach(function () {
+            beforeEach(async () => {
               generateFakeFetchResponses({
                 issuesResponse: {
                   items: [
@@ -1003,19 +938,16 @@
                   ],
                 },
               });
-              spyOn(NotificationIssue.prototype, "getPackageName").andCallFake(function () {
+              spyOn(NotificationIssue.prototype, "getPackageName").and.callFake(function () {
                 return "somepackage";
               });
-              spyOn(NotificationIssue.prototype, "getRepoUrl").andCallFake(function () {
+              spyOn(NotificationIssue.prototype, "getRepoUrl").and.callFake(function () {
                 return "https://github.com/someguy/somepackage";
               });
               generateException();
               fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-              return waitsForPromise(function () {
-                return fatalError.getRenderPromise().then(function () {
-                  return (issueBody = fatalError.issue.issueBody);
-                });
-              });
+              await fatalError.getRenderPromise();
+              return (issueBody = fatalError.issue.issueBody);
             });
             return it("shows the user a view issue button", function () {
               var button, fatalNotification;
@@ -1030,7 +962,7 @@
             });
           });
           return describe("when the issue is closed", function () {
-            beforeEach(function () {
+            beforeEach(async () => {
               generateFakeFetchResponses({
                 issuesResponse: {
                   items: [
@@ -1042,19 +974,16 @@
                   ],
                 },
               });
-              spyOn(NotificationIssue.prototype, "getPackageName").andCallFake(function () {
+              spyOn(NotificationIssue.prototype, "getPackageName").and.callFake(function () {
                 return "somepackage";
               });
-              spyOn(NotificationIssue.prototype, "getRepoUrl").andCallFake(function () {
+              spyOn(NotificationIssue.prototype, "getRepoUrl").and.callFake(function () {
                 return "https://github.com/someguy/somepackage";
               });
               generateException();
               fatalError = notificationContainer.querySelector("lumine-notification.fatal");
-              return waitsForPromise(function () {
-                return fatalError.getRenderPromise().then(function () {
-                  return (issueBody = fatalError.issue.issueBody);
-                });
-              });
+              await fatalError.getRenderPromise();
+              return (issueBody = fatalError.issue.issueBody);
             });
             return it("shows the user a view issue button", function () {
               var button;
@@ -1085,7 +1014,7 @@
         });
         return describe("when a spawn ENOENT error is thrown", function () {
           beforeEach(function () {
-            return spyOn(lumine.window, "isDevMode").andReturn(false);
+            return spyOn(lumine.window, "isDevMode").and.returnValue(false);
           });
           describe("when the binary has no path", function () {
             beforeEach(function () {
