@@ -4,7 +4,8 @@ A tidy way to display notifications.
 
 ## Features
 
-- **Notification popups**: renders info, success, warning, and error notifications from Lumine and its packages.
+- **Notification popups**: renders hint, info, success, warning, and error notifications from Lumine and its packages.
+- **Quiet hints**: renders a hint on the theme's own surface without a severity color, so an aside never reads as a smaller warning.
 - **Notification log**: keeps a searchable history of notifications in a dedicated panel.
 - **Error reporting**: captures uncaught exceptions and presents them as dismissable error notifications.
 - **Configurable timeout**: control how long non-dismissable notifications stay on screen.

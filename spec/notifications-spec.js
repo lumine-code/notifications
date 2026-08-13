@@ -102,9 +102,14 @@
         expect(notificationContainer.querySelector("lumine-notification.error")).toBeDefined();
         lumine.notifications.addFatalError("A message");
         expect(notificationContainer.childNodes.length).toBe(5);
-        return expect(
-          notificationContainer.querySelector("lumine-notification.fatal"),
-        ).toBeDefined();
+        expect(notificationContainer.querySelector("lumine-notification.fatal")).toBeDefined();
+        lumine.notifications.addHint("A message");
+        expect(notificationContainer.childNodes.length).toBe(6);
+        const hint = notificationContainer.querySelector("lumine-notification.hint");
+        expect(hint).toHaveClass("icon-light-bulb");
+        // A hint asks nothing of the user, so it autohides like any other
+        // notification left non-dismissable.
+        return expect(hint).not.toHaveClass("has-close");
       });
       it("displays notification with a detail when a detail is specified", function () {
         var notification;

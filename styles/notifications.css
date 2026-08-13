@@ -389,6 +389,49 @@ lumine-notifications {
       }
     }
   }
+
+  /* A hint is a standard notification in every respect but color: same width,
+     same icon bar, same pale content block. What it lacks is a severity, so it
+     is the one type built from a neutral.
+
+     The other types have a color pair and lighten the background one by +25.
+     A hint has only --text-color-hint, whose lightness ranges from 41 to 70
+     across the fleet's themes, so an offset would land anywhere between a pale
+     tint and a mid-grey slab. It sets absolute lightness instead, and takes
+     only hue and saturation from the theme -- which keeps a hint at the same
+     weight as a warning everywhere, while a tinted theme's grey stays tinted. */
+  lumine-notification.hint {
+    .content {
+      color: hsl(from var(--text-color-hint) h s 18%);
+      background-color: hsl(from var(--text-color-hint) h s 88% / 1);
+    }
+
+    a {
+      color: hsl(from var(--text-color-hint) h s 32%);
+    }
+
+    code {
+      color: hsl(from var(--text-color-hint) h s 18%);
+      background-color: hsl(from var(--text-color-hint) h s 81% / 1);
+    }
+
+    &.icon:before {
+      color: hsl(from var(--text-color-hint) h s 96%);
+      background-color: hsl(from var(--text-color-hint) h s 55% / 1);
+    }
+
+    .close-all.btn {
+      border: 1px solid hsl(from var(--text-color-hint) h s 18% / 0.3);
+      color: hsl(from var(--text-color-hint) h s 18% / 0.6);
+      text-shadow: none;
+
+      &:hover {
+        background: none;
+        border-color: hsl(from var(--text-color-hint) h s 18% / 0.8);
+        color: hsl(from var(--text-color-hint) h s 18%);
+      }
+    }
+  }
 }
 
 /* Animations ------------------------------- */

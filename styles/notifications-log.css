@@ -212,4 +212,26 @@
       color: var(--text-color-success);
     }
   }
+
+  /* hint */
+  .notification-type.hint {
+    &.show-type {
+      color: var(--text-color-hint);
+      opacity: 1;
+    }
+  }
+
+  .hide-hint li.hint {
+    display: none;
+  }
+
+  .notifications-log-notification.hint {
+    .message {
+      color: var(--text-color-hint);
+    }
+
+    &.icon:before {
+      color: var(--text-color-hint);
+    }
+  }
 }
