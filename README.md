@@ -12,7 +12,7 @@ A tidy way to display notifications.
 
 ## Installation
 
-To install `notifications` search for _notifications_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/notifications`.
+To install `notifications` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/notifications`.
 
 ## Commands
 
