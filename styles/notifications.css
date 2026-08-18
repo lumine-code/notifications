@@ -121,8 +121,20 @@ lumine-notifications {
       padding-right: calc(var(--component-padding) + 24px); /* space for icon */
     }
 
+    /* A message or a detail past its cap scrolls, and a scrollbar is painted at the
+       very right edge of the box that scrolls -- over the content's rounded corner,
+       and under the close buttons, unless the content clips it. */
     .content {
       border-radius: 0 var(--component-border-radius) var(--component-border-radius) 0;
+      overflow: hidden;
+    }
+
+    /* The theme styles scrollbars for the editor's dark chrome, which reads as a
+       slab against a pale notification. Take the colour from the content. */
+    .message,
+    .detail {
+      scrollbar-width: thin;
+      scrollbar-color: rgb(from currentColor r g b / 0.25) transparent;
     }
 
     .message {
