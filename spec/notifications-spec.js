@@ -291,7 +291,7 @@
         });
       });
       describe("when the `buttons` options is used", function () {
-        return it("displays the buttons in the .description element", function () {
+        it("displays the buttons in the .description element", function () {
           var btnOne, btnTwo, clicked, notification;
           clicked = [];
           lumine.notifications.addSuccess("A message", {
@@ -324,6 +324,19 @@
           btnTwo.click();
           btnOne.click();
           return expect(clicked).toEqual(["two", "one"]);
+        });
+        return it("lets a button name its own variant instead of the notification's", function () {
+          var accented, plain, notification;
+          lumine.notifications.addInfo("A message", {
+            buttons: [{ text: "Yes", className: "btn-primary" }, { text: "No" }],
+          });
+          notification = notificationContainer.querySelector("lumine-notification.info");
+          accented = notification.querySelector(".btn-primary");
+          plain = notification.querySelectorAll(".btn-toolbar .btn")[1];
+          expect(accented.textContent).toBe("Yes");
+          expect(accented).not.toHaveClass("btn-info");
+          expect(plain.textContent).toBe("No");
+          return expect(plain).toHaveClass("btn-info");
         });
       });
       return describe("when an exception is thrown", function () {
