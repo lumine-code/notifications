@@ -3,6 +3,7 @@
   var Notification,
     NotificationElement,
     NotificationIssue,
+    Icon,
     UserUtils,
     fs,
     generateException,
@@ -18,6 +19,8 @@
   temp = require("@lumine-code/temp").track();
 
   Notification = require("lumine").Notification;
+
+  Icon = require("lumine").Icon;
 
   NotificationElement = require("../lib/notification-element");
 
@@ -107,6 +110,21 @@
         expect(notificationContainer.childNodes.length).toBe(6);
         const hint = notificationContainer.querySelector("lumine-notification.hint");
         expect(hint).toHaveClass("icon-light-bulb");
+        const iconProvider = lumine.icons.addProvider(
+          {
+            id: "notifications-spec",
+            handles: ["name"],
+            usesContext: true,
+            iconFor(target) {
+              return target.context === "notifications" && target.name === "light-bulb"
+                ? Icon.classes(["icon-flame"])
+                : null;
+            },
+          },
+          { priority: 100 },
+        );
+        expect(hint).toHaveClass("icon-flame");
+        iconProvider.dispose();
         // A hint asks nothing of the user, so it autohides like any other
         // notification left non-dismissable.
         return expect(hint).not.toHaveClass("has-close");

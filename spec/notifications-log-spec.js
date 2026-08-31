@@ -4,11 +4,14 @@
     NotificationElement,
     NotificationIssue,
     NotificationsLog,
+    Icon,
     generateException,
     generateFakeFetchResponses,
     ref;
 
   Notification = require("lumine").Notification;
+
+  Icon = require("lumine").Icon;
 
   NotificationElement = require("../lib/notification-element");
 
@@ -105,6 +108,28 @@
         expect(notificationsLogContainer.childNodes).toHaveLength(6);
         expect(notification).toBeDefined();
         return expect(notification.querySelector(".btn-toolbar")).not.toBeEmpty();
+      });
+      it("routes notification icons through the shared name registry", function () {
+        lumine.notifications.addHint("A message");
+        const notification = notificationsLogContainer.querySelector(
+          ".notifications-log-notification.hint",
+        );
+        expect(notification).toHaveClass("icon-light-bulb");
+        const iconProvider = lumine.icons.addProvider(
+          {
+            id: "notifications-log-spec",
+            handles: ["name"],
+            usesContext: true,
+            iconFor(target) {
+              return target.context === "notifications-log" && target.name === "light-bulb"
+                ? Icon.classes(["icon-flame"])
+                : null;
+            },
+          },
+          { priority: 100 },
+        );
+        expect(notification).toHaveClass("icon-flame");
+        iconProvider.dispose();
       });
       describe("when the `buttons` options is used", function () {
         return it("displays the buttons in the .btn-toolbar element", function () {
