@@ -286,9 +286,11 @@
             notification.onDidDisplay(function () {
               return (didDisplay = true);
             });
+            expect(notificationView.element).not.toHaveClass("icon-info");
             logItem.click();
             expect(didDisplay).toBe(true);
             expect(notification.dismissed).toBe(false);
+            expect(notificationView.element).toHaveClass("icon-info");
             return expect(notificationView.element).toBeVisible();
           });
           return describe("when the notification is dismissed again", function () {
