@@ -40,6 +40,13 @@
       border-bottom: 1px solid var(--base-border-color);
       max-height: var(--notifications-log-icon-size);
       overflow: hidden;
+      --notifications-log-severity-background: transparent;
+      transition: background-color 0.15s ease-out;
+      cursor: default;
+
+      &:hover {
+        background-color: rgb(from var(--notifications-log-severity-background) r g b / 0.08);
+      }
 
       .notifications-log-notification {
         flex: auto;
@@ -115,6 +122,10 @@
     display: none;
   }
 
+  .notifications-log-item.fatal {
+    --notifications-log-severity-background: var(--background-color-error);
+  }
+
   .notifications-log-notification.fatal {
     .message {
       color: var(--text-color-error);
@@ -135,6 +146,10 @@
 
   .hide-error li.error {
     display: none;
+  }
+
+  .notifications-log-item.error {
+    --notifications-log-severity-background: var(--background-color-error);
   }
 
   .notifications-log-notification.error {
@@ -159,6 +174,10 @@
     display: none;
   }
 
+  .notifications-log-item.warning {
+    --notifications-log-severity-background: var(--background-color-warning);
+  }
+
   .notifications-log-notification.warning {
     .message {
       color: var(--text-color-warning);
@@ -179,6 +198,10 @@
 
   .hide-info li.info {
     display: none;
+  }
+
+  .notifications-log-item.info {
+    --notifications-log-severity-background: var(--background-color-info);
   }
 
   .notifications-log-notification.info {
@@ -203,6 +226,10 @@
     display: none;
   }
 
+  .notifications-log-item.success {
+    --notifications-log-severity-background: var(--background-color-success);
+  }
+
   .notifications-log-notification.success {
     .message {
       color: var(--text-color-success);
@@ -223,6 +250,10 @@
 
   .hide-hint li.hint {
     display: none;
+  }
+
+  .notifications-log-item.hint {
+    --notifications-log-severity-background: var(--text-color-hint);
   }
 
   .notifications-log-notification.hint {
