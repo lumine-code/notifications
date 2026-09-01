@@ -86,6 +86,7 @@
           .btn-copy-report {
             vertical-align: middle;
             margin-left: calc(var(--component-padding) / 2);
+            cursor: default;
 
             &::before {
               margin: 0;

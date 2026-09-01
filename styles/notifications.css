@@ -190,6 +190,7 @@ lumine-notifications {
 
       .stack-toggle {
         margin-top: var(--component-padding);
+        cursor: default;
 
         .icon:before {
           margin: 0;
@@ -232,6 +233,7 @@ lumine-notifications {
 
     .btn-copy-report {
       vertical-align: middle;
+      cursor: default;
     }
 
     .opening {
