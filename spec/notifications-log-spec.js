@@ -33,6 +33,10 @@
       await lumine.packages.activatePackage("notifications");
       await lumine.workspace.open(NotificationsLog.prototype.getURI());
     });
+    it("keeps the log in the bottom dock", function () {
+      expect(NotificationsLog.prototype.getDefaultLocation()).toBe("bottom");
+      expect(NotificationsLog.prototype.getAllowedLocations()).toEqual(["bottom"]);
+    });
     describe("when the package is activated", function () {
       return it("attaches an lumine-notifications element to the dom", function () {
         return expect(workspaceElement.querySelector(".notifications-log-items")).toBeDefined();
