@@ -485,7 +485,7 @@
             );
             expect(fatalError.issue.getPackageName()).toBe("notifications");
             button = fatalError.querySelector(".btn");
-            expect(button.textContent).toContain("Create issue on the notifications package");
+            expect(button.textContent).toContain("Open issue on the notifications package");
             expect(issueTitle).toContain("$LUMINE_HOME");
             expect(issueTitle).not.toContain(process.env.LUMINE_HOME);
             expect(issueBody).toMatch(/Lumine\*\*: [0-9].[0-9]+.[0-9]+/gi);
@@ -495,6 +495,48 @@
               "Thrown From**: [notifications](https://github.com/lumine-code/notifications) package ",
             );
             return expect(issueBody).toContain("### Non-Core Packages");
+          });
+          it("keeps the issue URL short and the full report out of it", async () => {
+            await fatalError.getRenderPromise();
+            const button = fatalError.querySelector(".btn-issue");
+            const issueUrl = new URL(button.getAttribute("href"));
+
+            expect(issueUrl.origin + issueUrl.pathname).toBe(
+              "https://github.com/lumine-code/notifications/issues/new",
+            );
+            expect(issueUrl.searchParams.get("title")).toContain("ReferenceError");
+            expect(issueUrl.searchParams.get("body")).toContain("paste it here");
+            expect(issueUrl.href.length).toBeLessThan(500);
+            expect(issueUrl.href).not.toContain("Non-Core+Packages");
+            expect(window.fetch.calls.count()).toBe(1);
+          });
+          it("copies the full error report independently", async () => {
+            await fatalError.getRenderPromise();
+            const issueBody = await fatalError.issue.getIssueBody();
+            spyOn(lumine.clipboard, "write").and.returnValue(Promise.resolve());
+            spyOn(lumine.notifications, "addSuccess");
+
+            fatalError.querySelector(".btn-copy-report").click();
+            await conditionPromise(() => lumine.notifications.addSuccess.calls.any());
+
+            expect(lumine.clipboard.write).toHaveBeenCalledWith(issueBody);
+            expect(lumine.notifications.addSuccess).toHaveBeenCalledWith(
+              "Error report copied to the clipboard.",
+            );
+          });
+          it("warns when the error report cannot be copied", async () => {
+            await fatalError.getRenderPromise();
+            const error = new Error("clipboard unavailable");
+            spyOn(lumine.clipboard, "write").and.returnValue(Promise.reject(error));
+            spyOn(lumine.notifications, "addWarning");
+
+            fatalError.querySelector(".btn-copy-report").click();
+            await conditionPromise(() => lumine.notifications.addWarning.calls.any());
+
+            expect(lumine.notifications.addWarning).toHaveBeenCalledWith(
+              "Unable to copy the error report.",
+              { detail: error.message, dismissable: true },
+            );
           });
           return it("standardizes platform separators on #win32", async () => {
             await fatalError.getRenderPromise();
@@ -817,7 +859,7 @@
             expect(fatalError.innerHTML).toContain("bug in Lumine");
             expect(fatalError.issue.getPackageName()).toBeUndefined();
             button = fatalError.querySelector(".btn");
-            expect(button.textContent).toContain("Create issue on lumine-code/lumine");
+            expect(button.textContent).toContain("Open issue on lumine-code/lumine");
             expect(issueBody).toContain("ReferenceError: a is not defined");
             return expect(issueBody).toContain("**Thrown From**: Lumine Core");
           });
@@ -847,11 +889,11 @@
             await fatalError.getRenderPromise();
             return (issueBody = fatalError.issue.issueBody);
           });
-          return it("asks the user to create an issue", function () {
+          return it("asks the user to open an issue", function () {
             var button, fatalNotification;
             button = fatalError.querySelector(".btn");
             fatalNotification = fatalError.querySelector(".fatal-notification");
-            expect(button.textContent).toContain("Create issue");
+            expect(button.textContent).toContain("Open issue");
             return expect(fatalNotification.textContent).toContain(
               "The error was thrown from the notifications package.",
             );
@@ -885,7 +927,7 @@
               await fatalError.getRenderPromise();
               var button;
               button = fatalError.querySelector(".btn");
-              expect(button.textContent).toContain("Create issue");
+              expect(button.textContent).toContain("Open issue");
               return expect(fatalError.issue.getIssueTitle()).toBe(expectedIssueTitle);
             });
           });
@@ -919,7 +961,7 @@
                 await fatalError.getRenderPromise();
                 return (issueBody = fatalError.issue.issueBody);
               });
-              it("doesn't show the Create Issue button", function () {
+              it("doesn't show the Open Issue button", function () {
                 var button;
                 button = fatalError.querySelector(".btn-issue");
                 return expect(button).not.toExist();
@@ -952,7 +994,7 @@
                 var button;
                 fatalError = notificationContainer.querySelector("lumine-notification.fatal");
                 button = fatalError.querySelector(".btn");
-                return expect(button.textContent).toContain("Create issue");
+                return expect(button.textContent).toContain("Open issue");
               });
             });
           });

@@ -183,13 +183,36 @@
             fatalError = notificationsLogContainer.querySelector(".notifications-log-item.fatal");
             await fatalError.getRenderPromise();
           });
-          return it("asks the user to create an issue", function () {
+          it("asks the user to open an issue", function () {
             var button, copyReport;
             button = fatalError.querySelector(".btn");
             copyReport = fatalError.querySelector(".btn-copy-report");
             expect(button).toBeDefined();
-            expect(button.textContent).toContain("Create issue");
+            expect(button.textContent).toContain("Open issue");
             return expect(copyReport).toBeDefined();
+          });
+          it("copies the report from the log action", async () => {
+            spyOn(lumine.clipboard, "write").and.returnValue(Promise.resolve());
+            spyOn(lumine.notifications, "addSuccess");
+
+            fatalError.querySelector(".btn-copy-report").click();
+            await conditionPromise(() => lumine.notifications.addSuccess.calls.any());
+
+            expect(lumine.clipboard.write).toHaveBeenCalled();
+            expect(lumine.notifications.addSuccess).toHaveBeenCalledWith(
+              "Error report copied to the clipboard.",
+            );
+          });
+          it("opens the issue URL once from the log action", async () => {
+            spyOn(lumine.shell, "openExternal").and.resolveTo();
+
+            fatalError.querySelector(".btn-issue").click();
+            await conditionPromise(() => lumine.shell.openExternal.calls.any());
+
+            expect(lumine.shell.openExternal.calls.count()).toBe(1);
+            expect(lumine.shell.openExternal.calls.mostRecent().args[0]).toContain(
+              "https://github.com/lumine-code/notifications/issues/new",
+            );
           });
         });
         describe("when a locally installed core package is out of date", function () {
@@ -216,7 +239,7 @@
             fatalError = notificationsLogContainer.querySelector(".notifications-log-item.fatal");
             await fatalError.getRenderPromise();
           });
-          return it("removes the Create Issue button", function () {
+          return it("removes the Open Issue button", function () {
             return expect(fatalError.querySelector(".btn-issue")).not.toExist();
           });
         });

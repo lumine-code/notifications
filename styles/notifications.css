@@ -235,10 +235,6 @@ lumine-notifications {
       vertical-align: middle;
       cursor: default;
     }
-
-    .opening {
-      cursor: progress;
-    }
   }
 }
 
