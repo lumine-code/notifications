@@ -5,8 +5,8 @@
   CommandLogger = require("../lib/command-logger");
 
   describe("CommandLogger", function () {
-    var dispatch, element, logger, ref;
-    ((ref = []), (element = ref[0]), (logger = ref[1]));
+    var dispatch, element, logger, loggerDisposable, ref;
+    ((ref = []), (element = ref[0]), (logger = ref[1]), (loggerDisposable = ref[2]));
     dispatch = function (command) {
       return lumine.commands.dispatch(element, command);
     };
@@ -15,7 +15,11 @@
       element.id = "some-id";
       element.className = "some-class another-class";
       logger = new CommandLogger();
-      return logger.start();
+      loggerDisposable = logger.start();
+      return loggerDisposable;
+    });
+    afterEach(function () {
+      return loggerDisposable.dispose();
     });
     describe("logging of commands", function () {
       it("catches the name of the command", function () {

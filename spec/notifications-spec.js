@@ -40,6 +40,9 @@
       lumine.notifications.clear();
       activationPromise = lumine.packages.activatePackage("notifications");
       await activationPromise;
+      NotificationElement = require("../lib/notification-element");
+      NotificationIssue = require("../lib/notification-issue");
+      UserUtils = require("../lib/user-utilities");
     });
     describe("when the package is activated", function () {
       return it("attaches an lumine-notifications element to the dom", function () {
