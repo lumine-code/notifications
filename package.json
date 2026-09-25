@@ -25,9 +25,6 @@
   "engines": {
     "lumine": "^1.0.0"
   },
-  "backgroundTips": [
-    "{% if keys['notifications:toggle-log'] %}You can reread every notification you have dismissed with {{ 'notifications:toggle-log' | keystroke }}{% else %}Every notification you dismiss is kept in the notifications log, so nothing is lost.{% endif %}"
-  ],
   "scripts": {
     "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
@@ -51,6 +48,13 @@
   },
   "deserializers": {
     "notifications/NotificationsLog": "createLog"
+  },
+  "providedServices": {
+    "background-tips.provider": {
+      "versions": {
+        "1.0.0": "provideBackgroundTips"
+      }
+    }
   },
   "dependencies": {
     "@lumine-code/fs-plus": "github:lumine-code/fs-plus#e05833b203c67843d40a6bc650224ec0ac412407",
