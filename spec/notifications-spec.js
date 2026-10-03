@@ -16,7 +16,7 @@
 
   path = require("path");
 
-  temp = require("@lumine-code/temp").track();
+  temp = require("@lumine-code/fs-temp").track();
 
   Notification = require("lumine").Notification;
 
