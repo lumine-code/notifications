@@ -18,7 +18,7 @@ lumine-notifications {
   top: 35px;
   right: 0;
   bottom: 0;
-  padding: var(--component-padding);
+  padding: var(--ui-spacing);
   font-size: 1.2em;
   overflow-x: hidden;
   overflow-y: auto;
@@ -38,7 +38,7 @@ lumine-notifications {
       display: block;
     }
     .message {
-      padding-right: calc(var(--component-padding) * 2 + 95px); /* space for icon and button */
+      padding-right: calc(var(--ui-spacing) * 2 + 95px); /* space for icon and button */
     }
   }
 
@@ -50,7 +50,7 @@ lumine-notifications {
       padding-right: inherit;
     }
     &.has-close .message {
-      padding-right: calc(var(--component-padding) + 24px); /* space for icon */
+      padding-right: calc(var(--ui-spacing) + 24px); /* space for icon */
     }
   }
 
@@ -71,9 +71,9 @@ lumine-notifications {
       left: 0;
       width: var(--notifications-icon-size);
       height: 100%;
-      padding-top: var(--component-padding);
+      padding-top: var(--ui-spacing);
       text-align: center;
-      border-radius: var(--component-border-radius) 0 0 var(--component-border-radius);
+      border-radius: var(--ui-border-radius) 0 0 var(--ui-border-radius);
     }
 
     /* fill space between notifiactions to prevent click throughs */
@@ -107,7 +107,7 @@ lumine-notifications {
 
     /* .item's are used as general containers */
     .item {
-      padding: var(--component-padding);
+      padding: var(--ui-spacing);
       border-top: 1px solid hsla(0, 0%, 0%, 0.1);
       &.message {
         border-top: none;
@@ -118,14 +118,14 @@ lumine-notifications {
     }
 
     &.has-close .message {
-      padding-right: calc(var(--component-padding) + 24px); /* space for icon */
+      padding-right: calc(var(--ui-spacing) + 24px); /* space for icon */
     }
 
     /* A message or a detail past its cap scrolls, and a scrollbar is painted at the
        very right edge of the box that scrolls -- over the content's rounded corner,
        and under the close buttons, unless the content clips it. */
     .content {
-      border-radius: 0 var(--component-border-radius) var(--component-border-radius) 0;
+      border-radius: 0 var(--ui-border-radius) var(--ui-border-radius) 0;
       overflow: hidden;
     }
 
@@ -189,7 +189,7 @@ lumine-notifications {
       }
 
       .stack-toggle {
-        margin-top: var(--component-padding);
+        margin-top: var(--ui-spacing);
         cursor: default;
 
         .icon:before {
@@ -204,7 +204,7 @@ lumine-notifications {
       }
 
       .stack-container {
-        margin-top: var(--component-padding);
+        margin-top: var(--ui-spacing);
 
         .line {
           white-space: pre;

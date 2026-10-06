@@ -62,14 +62,14 @@
           bottom: 0;
           width: var(--notifications-log-icon-size);
           height: 100%;
-          padding-top: calc(var(--component-padding) / 2);
+          padding-top: calc(var(--ui-spacing) / 2);
           text-align: center;
         }
 
         .message {
           flex: 0 1 auto;
           word-wrap: break-word;
-          padding: calc(var(--component-padding) / 2) var(--component-padding);
+          padding: calc(var(--ui-spacing) / 2) var(--ui-spacing);
           border-left: 1px solid var(--base-border-color);
         }
 
@@ -85,7 +85,7 @@
 
           .btn-copy-report {
             vertical-align: middle;
-            margin-left: calc(var(--component-padding) / 2);
+            margin-left: calc(var(--ui-spacing) / 2);
             cursor: default;
 
             &::before {
@@ -100,7 +100,7 @@
         white-space: nowrap;
         text-align: center;
         line-height: var(--notifications-log-icon-size);
-        padding: 0 var(--component-padding);
+        padding: 0 var(--ui-spacing);
       }
     }
   }
