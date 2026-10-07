@@ -262,7 +262,7 @@ lumine-notifications {
     }
 
     &.icon:before {
-      color: hsl(from var(--background-color-error) h s calc(l + 36));
+      color: var(--text-color-on-error);
       background-color: var(--background-color-error);
     }
 
@@ -300,7 +300,7 @@ lumine-notifications {
     }
 
     &.icon:before {
-      color: hsl(from var(--background-color-warning) h s calc(l + 36));
+      color: var(--text-color-on-warning);
       background-color: var(--background-color-warning);
     }
 
@@ -340,7 +340,7 @@ lumine-notifications {
     }
 
     &.icon:before {
-      color: hsl(from var(--background-color-info) h s calc(l + 36));
+      color: var(--text-color-on-info);
       background-color: var(--background-color-info);
     }
 
@@ -378,7 +378,7 @@ lumine-notifications {
     }
 
     &.icon:before {
-      color: hsl(from var(--background-color-success) h s calc(l + 36));
+      color: var(--text-color-on-success);
       background-color: var(--background-color-success);
     }
 
