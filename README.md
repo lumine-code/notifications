@@ -2,6 +2,8 @@
 
 A tidy way to display notifications.
 
+Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/notifications`).
+
 ## Features
 
 - **Notification popups**: renders hint, info, success, warning, and error notifications from Lumine and its packages.
