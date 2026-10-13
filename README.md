@@ -12,6 +12,8 @@ Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/n
 - **Error reporting**: captures uncaught exceptions and presents them as dismissable error notifications.
 - **Configurable timeout**: control how long non-dismissable notifications stay on screen.
 
+![Read the real completion notification after synchronizing a project folder.](.github/demo.png)
+
 ## Installation
 
 To install `notifications` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/notifications`.

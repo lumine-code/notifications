@@ -1,0 +1,17 @@
+{
+  "title": "notifications",
+  "description": "Read the real completion notification after synchronizing a project folder.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "b22ecfc4b14601031a6f27736d38585e4f1afa04",
+  "mode": "normal",
+  "fontSettings": "default",
+  "themeSourceRevision": "6564a9e21899b5541e9c8f8006f9be6d6d72e6ad",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Read the real completion notification after synchronizing a project folder.",
+      "width": 1150,
+      "height": 520
+    }
+  ]
+}
