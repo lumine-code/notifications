@@ -319,6 +319,7 @@
             buttons: [
               {
                 text: "Button One",
+                title: "Explain the first action.",
                 className: "btn-one",
                 onDidClick: function () {
                   return clicked.push("one");
@@ -340,8 +341,10 @@
           btnTwo = notification.querySelector(".btn-two");
           expect(btnOne).toHaveClass("btn-success");
           expect(btnOne.textContent).toBe("Button One");
+          expect(btnOne.title).toBe("Explain the first action.");
           expect(btnTwo).toHaveClass("btn-success");
           expect(btnTwo.textContent).toBe("Button Two");
+          expect(btnTwo.hasAttribute("title")).toBe(false);
           btnTwo.click();
           btnOne.click();
           return expect(clicked).toEqual(["two", "one"]);
