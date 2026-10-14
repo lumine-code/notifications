@@ -138,16 +138,22 @@ describe("notifications in editor windows", () => {
   it("removes every window root when the package deactivates", async () => {
     const workspace = lumine.workspace;
     const extra = await workspace.openEditorWindow({ show: false });
-    lumine.notifications.addInfo("Main window notification.", { dismissable: true });
-    lumine.notifications.addInfo("Other window notification.", {
+    const local = lumine.notifications.addInfo("Main window notification.", { dismissable: true });
+    const remote = lumine.notifications.addInfo("Other window notification.", {
       window: extra,
       dismissable: true,
     });
+    const dismissed = jasmine.createSpy("notification dismissed");
+    local.onDidDismiss(dismissed);
+    remote.onDidDismiss(dismissed);
     const roots = [...main.windowRoots.values()].map((record) => record.element);
 
     await lumine.packages.deactivatePackage("notifications");
 
     expect(roots.every((element) => element.parentElement == null)).toBe(true);
+    expect(local.isDismissed()).toBe(true);
+    expect(remote.isDismissed()).toBe(true);
+    expect(dismissed).toHaveBeenCalledTimes(2);
     expect(main.windowRoots).toBeNull();
     await workspace.attachWindow(extra);
     expect(main.windowRoots).toBeNull();
