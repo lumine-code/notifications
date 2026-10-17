@@ -2,8 +2,8 @@
   "title": "notifications",
   "description": "Read the real completion notification after synchronizing a project folder.",
   "recordedOn": "2026-10-17",
-  "sourceRevision": "65b006255d589d2b77c89375884de4d9bea45d1e",
-  "themeSourceRevision": "80e8864a2e9a891ef1f911d78ab8f03fb3911f58",
+  "sourceRevision": "35bb4fb2800af791ddb532e7b5473f572e088dd1",
+  "themeSourceRevision": "9e9320170ef7426dfbee67f53b02cce39502e3a4",
   "mode": "normal",
   "fontSettings": "default",
   "scenario": "demo.js",
@@ -24,17 +24,17 @@
   "privacy": { "version": 1, "location": "neutral", "textChecked": true },
   "sources": {
     "editor": {
-      "revision": "200598247a0ae40f5e0bf1998b44f7fe77bc0aa7",
-      "dirty": true,
-      "workingTreeHash": "e7c07366b7b670382b90d4470006ca92b2d4b801080911397f65331b8d22c3b3"
+      "revision": "4c8ed3293222b11c4c822ee2b1a8b54489f0f9d6",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "package": {
-      "revision": "65b006255d589d2b77c89375884de4d9bea45d1e",
+      "revision": "35bb4fb2800af791ddb532e7b5473f572e088dd1",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "notifications": {
-      "revision": "65b006255d589d2b77c89375884de4d9bea45d1e",
+      "revision": "35bb4fb2800af791ddb532e7b5473f572e088dd1",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
@@ -49,12 +49,12 @@
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "one-theme": {
-      "revision": "80e8864a2e9a891ef1f911d78ab8f03fb3911f58",
+      "revision": "9e9320170ef7426dfbee67f53b02cce39502e3a4",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "tree-view": {
-      "revision": "b53b08b57b04b05d66810c555a4bc35b18fafe76",
+      "revision": "c1781b2f9680b1079e9c583431aed03e5b0992a3",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
@@ -79,7 +79,7 @@
       "label": "Read the real completion notification after synchronizing a project folder.",
       "width": 1150,
       "height": 520,
-      "sha256": "289781ea4762e9cd54a872e97e3aabade51ef45b3ff64193a8ee71e78d339397"
+      "sha256": "ea395d52609ea324abe44b2874b8acbc416a6b4a9275150fa92bc52aa1d011e6"
     }
   ]
 }
