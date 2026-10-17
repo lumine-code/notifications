@@ -208,6 +208,31 @@
           advanceClock(NotificationElement.prototype.animationDuration);
           return expect(notificationContainer.childNodes.length).toBe(0);
         });
+        it("returns focus to the editor when its native close button is activated", async () => {
+          jasmine.attachToDOM(workspaceElement);
+          const editor = await lumine.workspace.open();
+          const model = lumine.notifications.addSuccess("Keyboard dismissal", {
+            dismissable: true,
+          });
+          const element = notificationContainer.querySelector("lumine-notification.success");
+          const close = element.querySelector(".close");
+          expect(close.tagName).toBe("BUTTON");
+          expect(close.getAttribute("aria-label")).toBe("Dismiss notification");
+          close.focus();
+          expect(close).toHaveFocus();
+          close.click();
+          expect(model.isDismissed()).toBe(true);
+          expect(editor.getElement()).toHaveFocus();
+        });
+        it("keeps an automatic notification open when an action receives keyboard focus", async () => {
+          jasmine.attachToDOM(workspaceElement);
+          const model = lumine.notifications.addSuccess("Read [details](https://example.com)");
+          const element = notificationContainer.querySelector("lumine-notification.success");
+          element.querySelector(".message a").focus();
+          expect(model.isDismissable()).toBe(true);
+          advanceClock(NotificationElement.prototype.visibilityDuration);
+          expect(element).not.toHaveClass("remove");
+        });
         it("is removed when core:cancel is triggered", function () {
           var notificationElement;
           lumine.notifications.addSuccess("A message", {

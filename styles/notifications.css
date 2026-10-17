@@ -59,6 +59,7 @@ lumine-notifications {
     clear: right;
     position: relative;
     width: var(--notifications-width);
+    max-width: calc(100vw - 2 * var(--ui-spacing));
     padding-left: var(--notifications-icon-size);
     margin-bottom: var(--notifications-gap);
     max-height: var(--notifications-max-height);
@@ -108,7 +109,8 @@ lumine-notifications {
     /* .item's are used as general containers */
     .item {
       padding: var(--ui-spacing);
-      border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+      border-top: 1px solid
+        color-mix(in srgb, var(--notifications-foreground) 15%, var(--notifications-background));
       &.message {
         border-top: none;
         p:last-child {
@@ -159,14 +161,23 @@ lumine-notifications {
       text-align: center;
       font-size: 16px;
       text-shadow: none;
-      color: black;
-      opacity: 0.4;
+      border: none;
+      padding: 0;
+      background: transparent;
+      color: var(--notifications-foreground);
+      opacity: 1;
       &:hover,
       &:focus {
+        color: var(--notifications-foreground);
         opacity: 1;
+        background-color: rgb(from currentColor r g b / 10%);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--accent-indicator-color);
+        outline-offset: -2px;
       }
       &:active {
-        opacity: 0.2;
+        background-color: rgb(from currentColor r g b / 16%);
       }
       &:before {
         margin: 0;
@@ -179,7 +190,11 @@ lumine-notifications {
 
     .detail {
       font-size: 0.8em;
-      background-color: hsla(0, 0%, 100%, 0.3);
+      background-color: color-mix(
+        in srgb,
+        var(--notifications-foreground) 4%,
+        var(--notifications-background)
+      );
       background-clip: padding-box;
       max-height: var(--notifications-max-height-detail);
       overflow-y: auto;
@@ -238,209 +253,76 @@ lumine-notifications {
   }
 }
 
-/* Types -------------------------------
-   Each type expands the former .notification(@txt; @bg) Less mixin with its
-   text/background contract variables. */
+/* Severity colors tint the active overlay surface; text and controls retain
+   the same readable foreground in light, dark and mixed theme pairs. */
+lumine-notifications lumine-notification {
+  --notifications-accent: var(--text-color-hint);
+  --notifications-accent-foreground: lch(
+    from var(--notifications-accent) calc((49.44 - l) * infinity) 0 0
+  );
+  --notifications-foreground: var(--text-color-highlight);
+  --notifications-background: color-mix(
+    in srgb,
+    var(--notifications-accent) 12%,
+    var(--overlay-background-color)
+  );
 
-lumine-notifications {
-  lumine-notification.fatal,
-  lumine-notification.error {
-    .content {
-      color: hsl(from var(--text-color-error) h s calc(l - 40));
-      background-color: hsl(from var(--background-color-error) h s calc(l + 25));
-    }
+  .content {
+    color: var(--notifications-foreground);
+    background-color: var(--notifications-background);
+  }
 
-    a {
-      color: hsl(from var(--text-color-error) h s calc(l - 20));
-    }
+  a:not(.btn) {
+    color: var(--accent-link-color);
+  }
 
-    code {
-      color: hsl(from var(--text-color-error) h s calc(l - 40));
-      background-color: hsl(
-        from hsl(from var(--background-color-error) h s calc(l + 18)) h calc(s - 5) l
+  code {
+    color: var(--notifications-foreground);
+    background-color: color-mix(
+      in srgb,
+      var(--notifications-foreground) 8%,
+      var(--notifications-background)
+    );
+  }
+
+  &.icon::before {
+    color: var(--notifications-accent-foreground);
+    background-color: var(--notifications-accent);
+  }
+
+  .close-all.btn.btn {
+    color: var(--notifications-foreground);
+    border: 1px solid
+      color-mix(in srgb, var(--notifications-foreground) 30%, var(--notifications-background));
+    text-shadow: none;
+    background: transparent;
+
+    &:is(:hover, :focus-visible) {
+      color: var(--notifications-foreground);
+      background: color-mix(
+        in srgb,
+        var(--notifications-foreground) 8%,
+        var(--notifications-background)
       );
-    }
-
-    &.icon:before {
-      color: var(--text-color-on-error);
-      background-color: var(--background-color-error);
-    }
-
-    .close-all.btn {
-      border: 1px solid
-        rgb(from hsl(from var(--text-color-error) h s calc(l - 40)) r g b / calc(alpha - 0.7));
-      color: rgb(from hsl(from var(--text-color-error) h s calc(l - 40)) r g b / calc(alpha - 0.4));
-      text-shadow: none;
-
-      &:hover {
-        background: none;
-        border-color: rgb(
-          from hsl(from var(--text-color-error) h s calc(l - 40)) r g b / calc(alpha - 0.2)
-        );
-        color: hsl(from var(--text-color-error) h s calc(l - 40));
-      }
     }
   }
 
-  lumine-notification.warning {
-    .content {
-      color: hsl(from var(--text-color-warning) h s calc(l - 40));
-      background-color: hsl(from var(--background-color-warning) h s calc(l + 25));
-    }
-
-    a {
-      color: hsl(from var(--text-color-warning) h s calc(l - 20));
-    }
-
-    code {
-      color: hsl(from var(--text-color-warning) h s calc(l - 40));
-      background-color: hsl(
-        from hsl(from var(--background-color-warning) h s calc(l + 18)) h calc(s - 5) l
-      );
-    }
-
-    &.icon:before {
-      color: var(--text-color-on-warning);
-      background-color: var(--background-color-warning);
-    }
-
-    .close-all.btn {
-      border: 1px solid
-        rgb(from hsl(from var(--text-color-warning) h s calc(l - 40)) r g b / calc(alpha - 0.7));
-      color: rgb(
-        from hsl(from var(--text-color-warning) h s calc(l - 40)) r g b / calc(alpha - 0.4)
-      );
-      text-shadow: none;
-
-      &:hover {
-        background: none;
-        border-color: rgb(
-          from hsl(from var(--text-color-warning) h s calc(l - 40)) r g b / calc(alpha - 0.2)
-        );
-        color: hsl(from var(--text-color-warning) h s calc(l - 40));
-      }
-    }
+  &.fatal,
+  &.error {
+    --notifications-accent: var(--background-color-error);
+    --notifications-accent-foreground: var(--text-color-on-error);
   }
-
-  lumine-notification.info {
-    .content {
-      color: hsl(from var(--text-color-info) h s calc(l - 40));
-      background-color: hsl(from var(--background-color-info) h s calc(l + 25));
-    }
-
-    a {
-      color: hsl(from var(--text-color-info) h s calc(l - 20));
-    }
-
-    code {
-      color: hsl(from var(--text-color-info) h s calc(l - 40));
-      background-color: hsl(
-        from hsl(from var(--background-color-info) h s calc(l + 18)) h calc(s - 5) l
-      );
-    }
-
-    &.icon:before {
-      color: var(--text-color-on-info);
-      background-color: var(--background-color-info);
-    }
-
-    .close-all.btn {
-      border: 1px solid
-        rgb(from hsl(from var(--text-color-info) h s calc(l - 40)) r g b / calc(alpha - 0.7));
-      color: rgb(from hsl(from var(--text-color-info) h s calc(l - 40)) r g b / calc(alpha - 0.4));
-      text-shadow: none;
-
-      &:hover {
-        background: none;
-        border-color: rgb(
-          from hsl(from var(--text-color-info) h s calc(l - 40)) r g b / calc(alpha - 0.2)
-        );
-        color: hsl(from var(--text-color-info) h s calc(l - 40));
-      }
-    }
+  &.warning {
+    --notifications-accent: var(--background-color-warning);
+    --notifications-accent-foreground: var(--text-color-on-warning);
   }
-
-  lumine-notification.success {
-    .content {
-      color: hsl(from var(--text-color-success) h s calc(l - 40));
-      background-color: hsl(from var(--background-color-success) h s calc(l + 25));
-    }
-
-    a {
-      color: hsl(from var(--text-color-success) h s calc(l - 20));
-    }
-
-    code {
-      color: hsl(from var(--text-color-success) h s calc(l - 40));
-      background-color: hsl(
-        from hsl(from var(--background-color-success) h s calc(l + 18)) h calc(s - 5) l
-      );
-    }
-
-    &.icon:before {
-      color: var(--text-color-on-success);
-      background-color: var(--background-color-success);
-    }
-
-    .close-all.btn {
-      border: 1px solid
-        rgb(from hsl(from var(--text-color-success) h s calc(l - 40)) r g b / calc(alpha - 0.7));
-      color: rgb(
-        from hsl(from var(--text-color-success) h s calc(l - 40)) r g b / calc(alpha - 0.4)
-      );
-      text-shadow: none;
-
-      &:hover {
-        background: none;
-        border-color: rgb(
-          from hsl(from var(--text-color-success) h s calc(l - 40)) r g b / calc(alpha - 0.2)
-        );
-        color: hsl(from var(--text-color-success) h s calc(l - 40));
-      }
-    }
+  &.info {
+    --notifications-accent: var(--background-color-info);
+    --notifications-accent-foreground: var(--text-color-on-info);
   }
-
-  /* A hint is a standard notification in every respect but color: same width,
-     same icon bar, same pale content block. What it lacks is a severity, so it
-     is the one type built from a neutral.
-
-     The other types have a color pair and lighten the background one by +25.
-     A hint has only --text-color-hint, whose lightness ranges from 41 to 70
-     across the fleet's themes, so an offset would land anywhere between a pale
-     tint and a mid-grey slab. It sets absolute lightness instead, and takes
-     only hue and saturation from the theme -- which keeps a hint at the same
-     weight as a warning everywhere, while a tinted theme's grey stays tinted. */
-  lumine-notification.hint {
-    .content {
-      color: hsl(from var(--text-color-hint) h s 18%);
-      background-color: hsl(from var(--text-color-hint) h s 88% / 1);
-    }
-
-    a {
-      color: hsl(from var(--text-color-hint) h s 32%);
-    }
-
-    code {
-      color: hsl(from var(--text-color-hint) h s 18%);
-      background-color: hsl(from var(--text-color-hint) h s 81% / 1);
-    }
-
-    &.icon:before {
-      color: hsl(from var(--text-color-hint) h s 96%);
-      background-color: hsl(from var(--text-color-hint) h s 55% / 1);
-    }
-
-    .close-all.btn {
-      border: 1px solid hsl(from var(--text-color-hint) h s 18% / 0.3);
-      color: hsl(from var(--text-color-hint) h s 18% / 0.6);
-      text-shadow: none;
-
-      &:hover {
-        background: none;
-        border-color: hsl(from var(--text-color-hint) h s 18% / 0.8);
-        color: hsl(from var(--text-color-hint) h s 18%);
-      }
-    }
+  &.success {
+    --notifications-accent: var(--background-color-success);
+    --notifications-accent-foreground: var(--text-color-on-success);
   }
 }
 
@@ -522,5 +404,20 @@ lumine-notifications lumine-notification {
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+/* Respect reduced motion while retaining visible status indicators. */
+@media (prefers-reduced-motion: reduce) {
+  lumine-notifications lumine-notification,
+  lumine-notifications lumine-notification[type="fatal"],
+  lumine-notifications lumine-notification.remove,
+  lumine-notifications lumine-notification.remove:hover {
+    animation: none;
+  }
+  lumine-notifications lumine-notification.remove {
+    visibility: hidden;
+    max-height: 0;
+    margin-bottom: 0;
   }
 }

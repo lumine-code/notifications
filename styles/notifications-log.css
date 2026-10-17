@@ -18,8 +18,17 @@
       margin: 1px;
       padding: 0;
       color: var(--text-color-subtle);
-      opacity: 0.5;
       background: var(--base-background-color);
+
+      &:hover {
+        color: var(--text-color-highlight);
+        background: var(--background-color-highlight);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--accent-indicator-color);
+        outline-offset: -2px;
+      }
     }
 
     .notifications-clear-log {
@@ -265,5 +274,12 @@
     &.icon:before {
       color: var(--text-color-hint);
     }
+  }
+}
+
+/* Respect reduced motion while retaining visible status indicators. */
+@media (prefers-reduced-motion: reduce) {
+  .notifications-log .notifications-log-items .notifications-log-item {
+    transition: none;
   }
 }
