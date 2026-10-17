@@ -1,18 +1,18 @@
 {
   "title": "notifications",
   "description": "Read the real completion notification after synchronizing a project folder.",
-  "recordedOn": "2026-10-14",
-  "sourceRevision": "2e513033fbd3942ecee32b29daa042e056baec13",
-  "themeSourceRevision": "a673daf5882dc988419316d144a9bbe0aec9cb53",
+  "recordedOn": "2026-10-17",
+  "sourceRevision": "65b006255d589d2b77c89375884de4d9bea45d1e",
+  "themeSourceRevision": "80e8864a2e9a891ef1f911d78ab8f03fb3911f58",
   "mode": "normal",
   "fontSettings": "default",
   "scenario": "demo.js",
-  "recipeHash": "431764042f8444bcd3c2d4c1057c6a4939a23de264be2f2fbb5eb29c13c320e9",
+  "recipeHash": "f7b5fec30aaae7a464ca43e9961e19ae78990993b4c2d6fc06c15a4072f051b7",
   "environment": {
     "platform": "win32",
     "arch": "x64",
-    "electron": "44.7.1",
-    "chrome": "152.0.7977.149",
+    "electron": "44.9.0",
+    "chrome": "152.0.7977.167",
     "devicePixelRatio": 1,
     "locale": "en-GB",
     "fontFamily": "Fira Code, Menlo, DejaVu Sans Mono, Consolas, monospace",
@@ -24,37 +24,37 @@
   "privacy": { "version": 1, "location": "neutral", "textChecked": true },
   "sources": {
     "editor": {
-      "revision": "b3fcd05714f72e3aa88498c47334a04de2c51afa",
-      "dirty": false,
-      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      "revision": "200598247a0ae40f5e0bf1998b44f7fe77bc0aa7",
+      "dirty": true,
+      "workingTreeHash": "e7c07366b7b670382b90d4470006ca92b2d4b801080911397f65331b8d22c3b3"
     },
     "package": {
-      "revision": "2e513033fbd3942ecee32b29daa042e056baec13",
+      "revision": "65b006255d589d2b77c89375884de4d9bea45d1e",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "notifications": {
-      "revision": "2e513033fbd3942ecee32b29daa042e056baec13",
+      "revision": "65b006255d589d2b77c89375884de4d9bea45d1e",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "folder-sync": {
-      "revision": "8e6ba63cecd1e0e5892fc40de9aedaf403e15665",
+      "revision": "b217797561321d488d7ece0eecb59bda464b3d23",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "language-json": {
-      "revision": "25a53940e0ef145dfd0723a2b2d23096ddb536f3",
+      "revision": "8733eeb377f951347033ab05f1135f0807602f60",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "one-theme": {
-      "revision": "a673daf5882dc988419316d144a9bbe0aec9cb53",
+      "revision": "80e8864a2e9a891ef1f911d78ab8f03fb3911f58",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "tree-view": {
-      "revision": "aaa932b9f685f7514a5015d3b54079c45057475d",
+      "revision": "b53b08b57b04b05d66810c555a4bc35b18fafe76",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
@@ -62,7 +62,7 @@
   "fixtures": [
     {
       "file": "sync-source/.sync",
-      "sha256": "fbe43b20cb01f1ed5cde06e8f9c37c68c20a79f32b6134a1af952519938d4aa3"
+      "sha256": "ab24cce0ccc6342c949cf742f959fec15116739a5e56a89a0bd147b97ccb41cd"
     },
     {
       "file": "sync-source/README.md",
@@ -79,7 +79,7 @@
       "label": "Read the real completion notification after synchronizing a project folder.",
       "width": 1150,
       "height": 520,
-      "sha256": "f88fc94c42c04168f3849a09caebef6029d9789de6b270ba6baff4c860acd322"
+      "sha256": "289781ea4762e9cd54a872e97e3aabade51ef45b3ff64193a8ee71e78d339397"
     }
   ]
 }
