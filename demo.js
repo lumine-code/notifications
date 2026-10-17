@@ -32,8 +32,12 @@ module.exports = {
         {
           await lumine.packages.getActivePackage("folder-sync").mainModule.run();
         }
-        for (const notice of lumine.notifications.getNotifications()) {
-          if (notice.message === "Folder sync started...") notice.dismiss();
+        document.querySelector("lumine-notification.success")?.click();
+        for (const notice of document.querySelectorAll("lumine-notification.hint")) {
+          if (notice.querySelector(".message")?.textContent.trim() === "Folder sync started...") {
+            notice.click();
+            notice.querySelector(".close")?.click();
+          }
         }
         await waitFor(
           () => !document.querySelector("lumine-notification.hint"),
