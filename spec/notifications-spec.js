@@ -556,18 +556,28 @@
             );
           });
           it("warns when the error report cannot be copied", async () => {
+            jasmine.useRealClock();
             await fatalError.getRenderPromise();
             const error = new Error("clipboard unavailable");
-            spyOn(lumine.clipboard, "write").and.returnValue(Promise.reject(error));
+            spyOn(lumine.clipboard, "write").and.callFake(() => Promise.reject(error));
             spyOn(lumine.notifications, "addWarning");
 
-            fatalError.querySelector(".btn-copy-report").click();
-            await conditionPromise(() => lumine.notifications.addWarning.calls.any());
+            const unhandledRejections = [];
+            const onUnhandledRejection = (event) => unhandledRejections.push(event.reason);
+            window.addEventListener("unhandledrejection", onUnhandledRejection);
+            try {
+              fatalError.querySelector(".btn-copy-report").click();
+              await conditionPromise(() => lumine.notifications.addWarning.calls.any());
+              await new Promise((resolve) => setTimeout(resolve, 100));
 
-            expect(lumine.notifications.addWarning).toHaveBeenCalledWith(
-              "Unable to copy the error report.",
-              { detail: error.message, dismissable: true },
-            );
+              expect(unhandledRejections).toEqual([]);
+              expect(lumine.notifications.addWarning).toHaveBeenCalledWith(
+                "Unable to copy the error report.",
+                { detail: error.message, dismissable: true },
+              );
+            } finally {
+              window.removeEventListener("unhandledrejection", onUnhandledRejection);
+            }
           });
           return it("standardizes platform separators on #win32", async () => {
             await fatalError.getRenderPromise();
