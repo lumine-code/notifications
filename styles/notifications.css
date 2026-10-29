@@ -166,7 +166,7 @@ lumine-notifications {
       color: var(--notifications-foreground);
       opacity: 1;
       &:hover,
-      &:focus {
+      &:focus-visible {
         color: var(--notifications-foreground);
         opacity: 1;
         background-color: rgb(from currentColor r g b / 10%);
