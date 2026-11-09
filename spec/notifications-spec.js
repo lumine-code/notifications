@@ -43,6 +43,8 @@
       NotificationElement = require("../lib/notification-element");
       NotificationIssue = require("../lib/notification-issue");
       UserUtils = require("../lib/user-utilities");
+      // Issue presentation must not depend on host tools such as systeminfo.
+      spyOn(UserUtils, "getOSVersion").and.resolveTo("Microsoft Windows 11 Pro");
     });
     describe("when the package is activated", function () {
       return it("attaches an lumine-notifications element to the dom", function () {
@@ -936,6 +938,7 @@
             button = fatalError.querySelector(".btn");
             expect(button.textContent).toContain("Open issue on lumine-code/lumine");
             expect(issueBody).toContain("ReferenceError: a is not defined");
+            expect(issueBody).toContain("**OS**: Microsoft Windows 11 Pro");
             return expect(issueBody).toContain("**Thrown From**: Lumine Core");
           });
           it("contains the commands that the user run in the issue body", function () {
