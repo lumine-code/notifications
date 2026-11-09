@@ -337,6 +337,40 @@
         });
       });
       describe("when the `buttons` options is used", function () {
+        it("allows an action to dismiss its transient notification before click bubbling", function () {
+          const notification = lumine.notifications.addInfo("Completed action", {
+            buttons: [
+              {
+                text: "Open result",
+                onDidClick(event) {
+                  event.stopPropagation();
+                  expect(notification.isDismissable()).toBe(true);
+                  notification.dismiss();
+                  expect(notification.isDismissed()).toBe(true);
+                },
+              },
+            ],
+          });
+          const element = lumine.views.getView(notification).element;
+          const untouched = lumine.notifications.addInfo("Another completed action", {
+            buttons: [{ text: "Open another result" }],
+          });
+          const untouchedElement = lumine.views.getView(untouched).element;
+          expect(notification.isDismissable()).toBe(false);
+          expect(untouched.isDismissable()).toBe(false);
+          element.querySelector(".btn-toolbar .btn").click();
+          expect(notification.isDismissed()).toBe(true);
+          expect(element).toHaveClass("remove");
+          expect(untouchedElement).not.toHaveClass("remove");
+          expect(untouched.isDismissable()).toBe(false);
+          advanceClock(NotificationElement.prototype.animationDuration);
+          expect(element.parentElement).toBeNull();
+          expect(untouchedElement.parentElement).toBe(notificationContainer);
+          advanceClock(NotificationElement.prototype.visibilityDuration);
+          expect(untouchedElement).toHaveClass("remove");
+          advanceClock(NotificationElement.prototype.animationDuration);
+          expect(untouchedElement.parentElement).toBeNull();
+        });
         it("displays the buttons in the .description element", function () {
           var btnOne, btnTwo, clicked, notification;
           clicked = [];
