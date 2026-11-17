@@ -47,7 +47,7 @@
       display: flex;
       box-sizing: content-box; /* Keep spacing even */
       border-bottom: 1px solid var(--base-border-color);
-      max-height: var(--notifications-log-icon-size);
+      min-height: var(--notifications-log-icon-size);
       overflow: hidden;
       --notifications-log-severity-background: transparent;
       transition: background-color 0.15s ease-out;
@@ -75,11 +75,30 @@
           text-align: center;
         }
 
-        .message {
+        .notification-text {
           flex: 0 1 auto;
-          word-wrap: break-word;
+          min-width: 0;
           padding: calc(var(--ui-spacing) / 2) var(--ui-spacing);
           border-left: 1px solid var(--base-border-color);
+        }
+
+        .message {
+          overflow-wrap: anywhere;
+
+          p:last-child {
+            margin-bottom: 0;
+          }
+        }
+
+        .detail-preview {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          font-size: 0.85em;
+          color: var(--text-color-subtle);
         }
 
         .btn-toolbar {

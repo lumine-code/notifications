@@ -196,6 +196,10 @@ lumine-notifications {
 
       .line {
         font-family: var(--notifications-font-family-monospace);
+
+        &:empty {
+          min-height: 1lh;
+        }
       }
 
       .stack-toggle {

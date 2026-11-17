@@ -180,6 +180,21 @@
           "test <b>html</b> ",
         );
       });
+      it("keeps Markdown headings and literal diagnostic paths in separate fields", function () {
+        const detail = [
+          String.raw`Source: C:\Projects\[demo]\_draft`,
+          String.raw`Destination: \\server\share\[copy]`,
+          "",
+          "ENOSPC: <unknown> &amp; `data` **unchanged**",
+        ].join("\n");
+        const model = lumine.notifications.addWarning("Failed to **copy**", { detail });
+        const element = lumine.views.getView(model).element;
+        expect(element.querySelector(".message strong").textContent).toBe("copy");
+        const lines = [...element.querySelectorAll(".detail-content .line")];
+        expect(lines.map((line) => line.textContent).join("\n")).toBe(detail);
+        expect(lines.every((line) => line.children.length === 0)).toBe(true);
+        expect(lines[2].getBoundingClientRect().height).toBeGreaterThan(0);
+      });
       describe("when a dismissable notification is added", function () {
         it("is removed when Notification::dismiss() is called", function () {
           var notification, notificationElement;
@@ -462,6 +477,49 @@
             });
             return expect(lumine.notifications.getNotifications().length).toBe(0);
           });
+        });
+        it("keeps the exception identity and literal details after shortening its heading", async () => {
+          spyOn(lumine.window, "isDevMode").and.returnValue(false);
+          const message =
+            String.raw`Error: Cannot open C:\Projects\[demo]\_draft <unknown>` + " ````";
+          const error = new Error(message);
+          window.onerror.call(window, message, "/dev/null", 2, 3, error);
+          const model = lumine.notifications.getNotifications().at(-1);
+          const view = lumine.views.getView(model);
+          await view.getRenderPromise();
+          expect(model.getMessage()).toBe("Unexpected error");
+          expect(model.getOptions().reportTitle).toBe(message);
+          const detail = `${message}\n\nLocation: /dev/null:2`;
+          const lines = [...view.element.querySelectorAll(".detail-content .line")];
+          expect(lines.map((line) => line.textContent).join("\n")).toBe(detail);
+          const issueTitle = view.issue.getIssueTitle();
+          expect(issueTitle).toContain("Cannot open");
+          expect(issueTitle).not.toBe("Unexpected error");
+          expect(new URL(view.issue.getIssueUrl()).searchParams.get("title")).toBe(issueTitle);
+          const search = new URL(fetch.calls.mostRecent().args[0]);
+          expect(search.searchParams.get("q")).toContain(issueTitle);
+          const template = document.createElement("template");
+          template.innerHTML = lumine.tools.markdown.render(await view.issue.getIssueBody());
+          const diagnostic = [...template.content.querySelectorAll("pre > code")].find((code) =>
+            code.textContent.startsWith(message),
+          );
+          expect(diagnostic).toBeDefined();
+          expect(diagnostic.textContent).toContain(detail);
+        });
+        it("reports an exception without a source URL or stack", async () => {
+          spyOn(lumine.window, "isDevMode").and.returnValue(false);
+          const message = String.raw`Error: Unable to open C:\Projects\[demo]`;
+          window.onerror.call(window, message, "", 0, 0, { message });
+          const model = lumine.notifications.getNotifications().at(-1);
+          const view = lumine.views.getView(model);
+          await view.getRenderPromise();
+          expect(model.getMessage()).toBe("Unexpected error");
+          expect(model.getDetail()).toBe(message);
+          expect(view.issue.getPackageName()).toBeUndefined();
+          expect(await view.issue.getIssueBody()).toContain(message);
+          expect(view.element.querySelector(".btn-issue").href).toContain(
+            "https://github.com/lumine-code/lumine/issues/new",
+          );
         });
         describe("when the message contains a newline", function () {
           return it("removes the newline when generating the issue title", async () => {
@@ -1164,7 +1222,12 @@
             );
             error = notificationContainer.querySelector("lumine-notification.error");
             expect(error).toExist();
-            expect(error.innerHTML).toContain("Failed to spawn command");
+            expect(error.querySelector(".message").textContent.trim()).toBe(
+              "Failed to start process",
+            );
+            expect(error.querySelector(".detail-content").textContent).toContain(
+              "Failed to spawn command `bad-command`",
+            );
             return expect(error.innerHTML).not.toContain("BufferedProcessError");
           });
         });
@@ -1183,7 +1246,15 @@
               var error;
               notificationContainer = workspaceElement.querySelector("lumine-notifications");
               error = notificationContainer.querySelector("lumine-notification.error");
-              return expect(error.textContent).toContain("'some_binary' could not be spawned");
+              expect(error.querySelector(".message").textContent.trim()).toBe(
+                "Failed to start process",
+              );
+              expect(error.querySelector(".detail-content").textContent).toContain(
+                "Command: some_binary",
+              );
+              return expect(error.querySelector(".detail-content").textContent).toContain(
+                "spawn some_binary ENOENT",
+              );
             });
           });
         });

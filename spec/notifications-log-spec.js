@@ -113,6 +113,38 @@
         expect(notification).toBeDefined();
         return expect(notification.querySelector(".btn-toolbar")).not.toBeEmpty();
       });
+      it("shows literal context below a Markdown heading and restores the full diagnostic", function () {
+        const detail = [
+          String.raw`Source: C:\Projects\[demo]\_draft`,
+          String.raw`Destination: \\server\share\[copy] <draft>`,
+          "",
+          "ENOSPC: no space left on device",
+        ].join("\n");
+        const model = lumine.notifications.addWarning("Failed to **copy**", {
+          detail,
+          dismissable: true,
+        });
+        const item = notificationsLogContainer.querySelector(".notifications-log-item.warning");
+        const heading = item.querySelector(".message");
+        expect(heading.querySelector("strong").textContent).toBe("copy");
+        const preview = item.querySelector(".detail-preview");
+        expect(preview.textContent).toBe(detail);
+        expect(preview.children.length).toBe(0);
+        const previewBounds = preview.getBoundingClientRect();
+        expect(previewBounds.height).toBeGreaterThan(0);
+        expect(previewBounds.top).toBeGreaterThanOrEqual(heading.getBoundingClientRect().bottom);
+        expect(previewBounds.bottom).toBeLessThanOrEqual(item.getBoundingClientRect().bottom);
+        model.dismiss();
+        advanceClock(NotificationElement.prototype.animationDuration);
+        item.click();
+        const view = lumine.views.getView(model);
+        expect(view.element).not.toHaveClass("remove");
+        expect(
+          [...view.element.querySelectorAll(".detail-content .line")]
+            .map((line) => line.textContent)
+            .join("\n"),
+        ).toBe(detail);
+      });
       it("routes notification icons through the shared name registry", function () {
         lumine.notifications.addHint("A message");
         const notification = notificationsLogContainer.querySelector(
