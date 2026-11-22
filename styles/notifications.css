@@ -263,6 +263,11 @@ lumine-notifications lumine-notification {
   --notifications-link-color: hsl(from var(--notifications-tone) h s 32% / 1);
   --notifications-code-background: hsl(from var(--notifications-tone) h s 81% / 1);
 
+  /* Custom scrollbar layers mount beside .content, on the notification itself. */
+  --scrollbar-background-color: transparent;
+  --scrollbar-color: rgb(from var(--notifications-foreground) r g b / 0.25);
+  --scrollbar-color-hover: rgb(from var(--notifications-foreground) r g b / 0.4);
+
   &:is(.fatal, .error, .warning, .info, .success) {
     --notifications-foreground: hsl(from var(--notifications-tone) h s calc(l - 40));
     --notifications-background: hsl(from var(--notifications-accent) h s calc(l + 25));
