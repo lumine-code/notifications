@@ -1,6 +1,7 @@
 lumine-notifications {
   /* Package-local values (converted from Less variables) */
   --notifications-icon-size: 30px;
+  --notifications-icon-inset: var(--ui-spacing);
   --notifications-width: 450px;
   --notifications-width-detail: 450px;
   --notifications-max-height-message: 200px;
@@ -66,15 +67,35 @@ lumine-notifications {
     word-wrap: break-word;
     pointer-events: auto;
 
-    &.icon:before {
+    .notification-rail {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0 auto 0 0;
       width: var(--notifications-icon-size);
-      height: 100%;
-      padding-top: var(--ui-spacing);
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
       border-radius: var(--ui-border-radius) 0 0 var(--ui-border-radius);
+
+      > .notification-icon {
+        margin-top: var(--notifications-icon-inset);
+      }
+    }
+
+    .notification-icon {
+      display: flex;
+      position: relative;
+
+      &::before,
+      > :is(.icon-glyph, .icon-letter-glyph) {
+        margin-right: 0;
+      }
+    }
+
+    .detail-toggle {
+      --icon-button-focus-color: currentColor;
+      width: 100%;
+      padding: var(--notifications-icon-inset) 0 6px;
     }
 
     /* fill space between notifiactions to prevent click throughs */
@@ -100,7 +121,7 @@ lumine-notifications {
     &.has-description .meta,
     &.has-buttons .meta,
     &.has-close .close,
-    &.has-detail .detail,
+    &.has-detail .detail:not([hidden]),
     &.has-stack .stack-toggle,
     &.has-stack .stack-container {
       display: block;
@@ -161,6 +182,7 @@ lumine-notifications {
       font-size: 16px;
       text-shadow: none;
       border: none;
+      border-radius: 0;
       padding: 0;
       background: transparent;
       color: var(--notifications-foreground);
@@ -214,6 +236,7 @@ lumine-notifications {
       .detail-content {
         .line {
           white-space: pre-wrap;
+          overflow-wrap: anywhere;
         }
       }
 
@@ -246,8 +269,8 @@ lumine-notifications {
     }
 
     .btn-copy-report {
+      color: var(--notifications-link-color);
       vertical-align: middle;
-      cursor: default;
     }
   }
 }
@@ -291,7 +314,7 @@ lumine-notifications lumine-notification {
     background-color: var(--notifications-code-background);
   }
 
-  &.icon::before {
+  .notification-rail {
     color: var(--notifications-accent-foreground);
     background-color: var(--notifications-accent);
   }

@@ -114,7 +114,8 @@
         lumine.notifications.addHint("A message");
         expect(notificationContainer.childNodes.length).toBe(6);
         const hint = notificationContainer.querySelector("lumine-notification.hint");
-        expect(hint).toHaveClass("icon-light-bulb");
+        const icon = hint.querySelector(".notification-icon");
+        expect(icon).toHaveClass("icon-light-bulb");
         const iconProvider = lumine.icons.addProvider(
           {
             id: "notifications-spec",
@@ -128,7 +129,7 @@
           },
           { priority: 100 },
         );
-        expect(hint).toHaveClass("icon-flame");
+        expect(icon).toHaveClass("icon-flame");
         iconProvider.dispose();
         // A hint asks nothing of the user, so it autohides like any other
         // notification left non-dismissable.
@@ -195,6 +196,101 @@
         expect(lines.every((line) => line.children.length === 0)).toBe(true);
         expect(lines[2].getBoundingClientRect().height).toBeGreaterThan(0);
       });
+      it("opens ordinary details by default and lets the user collapse them", function () {
+        const model = lumine.notifications.addWarning("Cannot open the project.", {
+          detail: "The directory is unavailable.",
+          dismissable: true,
+        });
+        const { element } = lumine.views.getView(model);
+        const detail = element.querySelector(".detail");
+        const toggle = element.querySelector("button.detail-toggle");
+
+        expect(toggle).toBeVisible();
+        expect(toggle.querySelector(".notification-icon")).toHaveClass("icon-alert");
+        expect(toggle.textContent.trim()).toBe("");
+        expect(toggle.getAttribute("aria-label")).toBe("Hide details");
+        expect(toggle.title).toBe("Hide details");
+        expect(toggle.getAttribute("aria-expanded")).toBe("true");
+        expect(detail).toBeVisible();
+
+        toggle.click();
+
+        expect(toggle.getAttribute("aria-label")).toBe("Show details");
+        expect(toggle.title).toBe("Show details");
+        expect(toggle.getAttribute("aria-expanded")).toBe("false");
+        expect(detail).not.toBeVisible();
+      });
+      it("has no visible detail control without detail to show", function () {
+        const options = [{}, { detail: null }, { detail: "", detailCollapsed: true }];
+
+        for (const [index, option] of options.entries()) {
+          const model = lumine.notifications.addInfo(`No details ${index + 1}.`, option);
+          const { element } = lumine.views.getView(model);
+          expect(element.querySelector("button.detail-toggle")).not.toBeVisible();
+          expect(element.querySelector(".detail")).not.toBeVisible();
+        }
+      });
+      it("keeps a collapsed notification the same height as its summary alone", function () {
+        const summary = "Could not delete a file.";
+        const plain = lumine.notifications.addWarning(summary, { dismissable: true });
+        const summaryHeight = lumine.views.getView(plain).element.offsetHeight;
+        plain.dismiss();
+        advanceClock(NotificationElement.prototype.animationDuration);
+
+        const model = lumine.notifications.addWarning(summary, {
+          detail: "The file is in use.",
+          detailCollapsed: true,
+          dismissable: true,
+        });
+        const { element } = lumine.views.getView(model);
+
+        expect(element.querySelector("button.detail-toggle")).toBeVisible();
+        expect(element.offsetHeight).toBe(summaryHeight);
+      });
+      it("reveals literal details in a scrollable area on demand", function () {
+        const directory = String.raw`C:\Results\[case]`;
+        const longName = "a".repeat(200);
+        const lines = Array.from(
+          { length: 60 },
+          (_, index) => `${directory}\\${longName}-${index}.cdb`,
+        );
+        const model = lumine.notifications.addWarning("Could not delete 60 files.", {
+          detail: lines.join("\n"),
+          detailCollapsed: true,
+          dismissable: true,
+        });
+        const element = lumine.views.getView(model).element;
+        const detail = element.querySelector(".detail");
+        const toggle = element.querySelector("button.detail-toggle");
+        const width = element.offsetWidth;
+
+        expect(toggle).toBeVisible();
+        expect(toggle.getAttribute("aria-label")).toBe("Show details");
+        expect(toggle.getAttribute("aria-expanded")).toBe("false");
+        expect(toggle.getAttribute("aria-controls")).toBe(detail.id);
+        expect(detail).not.toBeVisible();
+
+        toggle.focus();
+        toggle.click();
+
+        expect(toggle).toBeVisible();
+        expect(toggle.ownerDocument.activeElement).toBe(toggle);
+        expect(toggle.getAttribute("aria-label")).toBe("Hide details");
+        expect(toggle.getAttribute("aria-expanded")).toBe("true");
+        expect(detail).toBeVisible();
+        expect(element.offsetWidth).toBe(width);
+        expect(detail.scrollHeight).toBeGreaterThan(detail.clientHeight);
+        expect(detail.scrollWidth).toBe(detail.clientWidth);
+        expect([...detail.querySelectorAll(".line")].map((line) => line.textContent)).toEqual(
+          lines,
+        );
+
+        toggle.click();
+
+        expect(toggle.ownerDocument.activeElement).toBe(toggle);
+        expect(toggle.getAttribute("aria-expanded")).toBe("false");
+        expect(detail).not.toBeVisible();
+      });
       describe("when a dismissable notification is added", function () {
         it("is removed when Notification::dismiss() is called", function () {
           var notification, notificationElement;
@@ -234,6 +330,7 @@
           const element = notificationContainer.querySelector("lumine-notification.success");
           const close = element.querySelector(".close");
           expect(close.tagName).toBe("BUTTON");
+          expect(close).toHaveClass("icon-button-no-scale");
           expect(close.getAttribute("aria-label")).toBe("Dismiss notification");
           close.focus();
           expect(close).toHaveFocus();
@@ -492,6 +589,8 @@
           const detail = `${message}\n\nLocation: /dev/null:2`;
           const lines = [...view.element.querySelectorAll(".detail-content .line")];
           expect(lines.map((line) => line.textContent).join("\n")).toBe(detail);
+          expect(view.element.querySelector(".detail")).toBeVisible();
+          expect(view.element.querySelector(".stack-container")).not.toBeVisible();
           const issueTitle = view.issue.getIssueTitle();
           expect(issueTitle).toContain("Cannot open");
           expect(issueTitle).not.toBe("Unexpected error");
@@ -1002,16 +1101,26 @@
           it("contains the commands that the user run in the issue body", function () {
             return expect(issueBody).toContain("some-package:a-command");
           });
-          return it("allows the user to toggle the stack trace", function () {
-            var stackContainer, stackToggle;
-            stackToggle = fatalError.querySelector(".stack-toggle");
-            stackContainer = fatalError.querySelector(".stack-container");
-            expect(stackToggle).toExist();
-            expect(stackContainer.style.display).toBe("none");
+          return it("allows the user to toggle the stack trace within the details", function () {
+            const detail = fatalError.querySelector(".detail");
+            const detailToggle = fatalError.querySelector("button.detail-toggle");
+            const stackToggle = detail.querySelector(".stack-toggle");
+            const stackContainer = detail.querySelector(".stack-container");
+
+            expect(stackToggle).toBeVisible();
+            expect(stackContainer).not.toBeVisible();
             stackToggle.click();
-            expect(stackContainer.style.display).toBe("block");
+            expect(stackContainer).toBeVisible();
+
+            detailToggle.click();
+            expect(stackToggle).not.toBeVisible();
+            expect(stackContainer).not.toBeVisible();
+
+            detailToggle.click();
+            expect(stackToggle).toBeVisible();
+            expect(stackContainer).toBeVisible();
             stackToggle.click();
-            return expect(stackContainer.style.display).toBe("none");
+            expect(stackContainer).not.toBeVisible();
           });
         });
         describe("when the there is an error searching for the issue", function () {
@@ -1228,6 +1337,7 @@
             expect(error.querySelector(".detail-content").textContent).toContain(
               "Failed to spawn command `bad-command`",
             );
+            expect(error.querySelector(".detail")).toBeVisible();
             return expect(error.innerHTML).not.toContain("BufferedProcessError");
           });
         });
@@ -1252,6 +1362,7 @@
               expect(error.querySelector(".detail-content").textContent).toContain(
                 "Command: some_binary",
               );
+              expect(error.querySelector(".detail")).toBeVisible();
               return expect(error.querySelector(".detail-content").textContent).toContain(
                 "spawn some_binary ENOENT",
               );

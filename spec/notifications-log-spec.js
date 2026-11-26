@@ -145,6 +145,46 @@
             .join("\n"),
         ).toBe(detail);
       });
+      it("reopens collapsed details from the log on demand", function () {
+        const detail = String.raw`C:\Results\[case]\result.cdb`;
+        const model = lumine.notifications.addWarning("Could not delete one file.", {
+          detail,
+          detailCollapsed: true,
+          dismissable: true,
+        });
+        const item = notificationsLogContainer.querySelector(".notifications-log-item.warning");
+        const { element } = lumine.views.getView(model);
+        const toggle = element.querySelector("button.detail-toggle");
+        const detailPanel = element.querySelector(".detail");
+
+        expect(item.querySelector(".detail-preview")).toBeNull();
+        expect(item.querySelector(".btn-toolbar")).toBeEmpty();
+
+        model.dismiss();
+        advanceClock(NotificationElement.prototype.animationDuration);
+        item.click();
+
+        expect(element).not.toHaveClass("remove");
+        expect(detailPanel).not.toBeVisible();
+
+        toggle.click();
+
+        expect(detailPanel).toBeVisible();
+        expect(element.querySelector(".detail-content").textContent).toBe(detail);
+        expect(item.textContent).not.toContain(detail);
+
+        model.dismiss();
+        advanceClock(NotificationElement.prototype.animationDuration);
+        item.click();
+
+        expect(detailPanel).toBeVisible();
+        expect(toggle.getAttribute("aria-expanded")).toBe("true");
+
+        toggle.click();
+
+        expect(detailPanel).not.toBeVisible();
+        expect(toggle.getAttribute("aria-expanded")).toBe("false");
+      });
       it("routes notification icons through the shared name registry", function () {
         lumine.notifications.addHint("A message");
         const notification = notificationsLogContainer.querySelector(
@@ -227,7 +267,9 @@
             spyOn(lumine.clipboard, "write").and.returnValue(Promise.resolve());
             spyOn(lumine.notifications, "addSuccess");
 
-            fatalError.querySelector(".btn-copy-report").click();
+            const copy = fatalError.querySelector("button.btn-copy-report.icon-button");
+            expect(copy.getAttribute("aria-label")).toBe("Copy error report to clipboard");
+            copy.click();
             await conditionPromise(() => lumine.notifications.addSuccess.calls.any());
 
             expect(lumine.clipboard.write).toHaveBeenCalled();
@@ -345,11 +387,12 @@
             notification.onDidDisplay(function () {
               return (didDisplay = true);
             });
-            expect(notificationView.element).not.toHaveClass("icon-info");
+            const icon = notificationView.element.querySelector(".notification-icon");
+            expect(icon).not.toHaveClass("icon-info");
             logItem.click();
             expect(didDisplay).toBe(true);
             expect(notification.dismissed).toBe(false);
-            expect(notificationView.element).toHaveClass("icon-info");
+            expect(icon).toHaveClass("icon-info");
             return expect(notificationView.element).toBeVisible();
           });
           return describe("when the notification is dismissed again", function () {

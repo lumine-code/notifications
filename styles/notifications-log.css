@@ -114,11 +114,7 @@
           .btn-copy-report {
             vertical-align: middle;
             margin-left: calc(var(--ui-spacing) / 2);
-            cursor: default;
-
-            &::before {
-              margin: 0;
-            }
+            color: var(--accent-link-color);
           }
         }
       }

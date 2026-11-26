@@ -79,14 +79,28 @@ describe("Notification status foreground pairs", () => {
     }
   });
 
+  it("keeps the left corners of the close button square", () => {
+    container.style.setProperty("--ui-border-radius", "8px");
+    const notification = document.createElement("lumine-notification");
+    notification.className = "warning has-close";
+    notification.innerHTML =
+      '<button type="button" class="close icon-button icon-button-no-scale icon icon-x" aria-label="Dismiss notification"></button>';
+    container.appendChild(notification);
+
+    const close = getComputedStyle(notification.querySelector(".close"));
+    expect(close.borderTopLeftRadius).toBe("0px");
+    expect(close.borderBottomLeftRadius).toBe("0px");
+  });
+
   it("lets each diagnostic background and its readable foreground control the icon stripe", () => {
     for (const status of ["error", "warning", "info", "success"]) {
       container.style.setProperty(`--background-color-${status}`, "rgb(240, 240, 240)");
       container.style.setProperty(`--text-color-on-${status}`, "rgb(10, 20, 30)");
       const notification = document.createElement("lumine-notification");
-      notification.className = `icon ${status}`;
+      notification.className = status;
+      notification.innerHTML = '<div class="notification-rail"></div>';
       container.appendChild(notification);
-      const stripe = getComputedStyle(notification, "::before");
+      const stripe = getComputedStyle(notification.querySelector(".notification-rail"));
       expect(stripe.backgroundColor).toBe("rgb(240, 240, 240)");
       expect(stripe.color).toBe("rgb(10, 20, 30)");
     }

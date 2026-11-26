@@ -19,7 +19,11 @@ describe("Notifications Log empty state", () => {
 
   it("moves between empty, populated and filtered states without removing its controls or rows", () => {
     const header = log.element.querySelector("header");
-    const clear = header.querySelector(".notifications-clear-log");
+    const clear = header.querySelector("button.notifications-clear-log.icon-button");
+    const infoFilter = header.querySelector("button.notification-type.info.icon-button");
+    expect(clear.getAttribute("aria-label")).toBe("Clear notifications");
+    expect(infoFilter.getAttribute("aria-label")).toBe("Show info notifications");
+    expect(infoFilter.getAttribute("aria-pressed")).toBe("true");
     expect(log.empty.hidden).toBeFalse();
     expect(log.empty.textContent).toBe("No notifications");
     expect(log.list.hidden).toBeTrue();
@@ -27,6 +31,7 @@ describe("Notifications Log empty state", () => {
     expect(log.empty.hidden).toBeTrue();
     expect(log.list.hidden).toBeFalse();
     log.toggleType("info", false);
+    expect(infoFilter.getAttribute("aria-pressed")).toBe("false");
     expect(log.empty.hidden).toBeFalse();
     expect(log.empty.textContent).toBe("No matching notifications");
     expect(log.list.children.length).toBe(1);
@@ -35,6 +40,7 @@ describe("Notifications Log empty state", () => {
     log.toggleType("warning", false);
     expect(log.empty.hidden).toBeFalse();
     log.toggleType("info", true);
+    expect(infoFilter.getAttribute("aria-pressed")).toBe("true");
     expect(log.empty.hidden).toBeTrue();
     expect(log.list.contains(info)).toBeTrue();
     expect(log.list.contains(warning)).toBeTrue();
