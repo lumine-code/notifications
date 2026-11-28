@@ -84,7 +84,7 @@ describe("Notification status foreground pairs", () => {
     const notification = document.createElement("lumine-notification");
     notification.className = "warning has-close";
     notification.innerHTML =
-      '<button type="button" class="close icon-button icon-button-no-scale icon icon-x" aria-label="Dismiss notification"></button>';
+      '<button type="button" class="close icon icon-x" aria-label="Dismiss notification"></button>';
     container.appendChild(notification);
 
     const close = getComputedStyle(notification.querySelector(".close"));

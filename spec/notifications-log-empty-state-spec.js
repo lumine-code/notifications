@@ -19,8 +19,8 @@ describe("Notifications Log empty state", () => {
 
   it("moves between empty, populated and filtered states without removing its controls or rows", () => {
     const header = log.element.querySelector("header");
-    const clear = header.querySelector("button.notifications-clear-log.icon-button");
-    const infoFilter = header.querySelector("button.notification-type.info.icon-button");
+    const clear = header.querySelector("button.notifications-clear-log");
+    const infoFilter = header.querySelector("button.notification-type.info");
     expect(clear.getAttribute("aria-label")).toBe("Clear notifications");
     expect(infoFilter.getAttribute("aria-label")).toBe("Show info notifications");
     expect(infoFilter.getAttribute("aria-pressed")).toBe("true");

@@ -267,7 +267,7 @@
             spyOn(lumine.clipboard, "write").and.returnValue(Promise.resolve());
             spyOn(lumine.notifications, "addSuccess");
 
-            const copy = fatalError.querySelector("button.btn-copy-report.icon-button");
+            const copy = fatalError.querySelector("button.btn-copy-report");
             expect(copy.getAttribute("aria-label")).toBe("Copy error report to clipboard");
             copy.click();
             await conditionPromise(() => lumine.notifications.addSuccess.calls.any());

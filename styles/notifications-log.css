@@ -112,9 +112,11 @@
           }
 
           .btn-copy-report {
-            vertical-align: middle;
             margin-left: calc(var(--ui-spacing) / 2);
-            color: var(--accent-link-color);
+
+            &::before {
+              margin: 0;
+            }
           }
         }
       }

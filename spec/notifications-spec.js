@@ -330,7 +330,7 @@
           const element = notificationContainer.querySelector("lumine-notification.success");
           const close = element.querySelector(".close");
           expect(close.tagName).toBe("BUTTON");
-          expect(close).toHaveClass("icon-button-no-scale");
+          expect(close).not.toHaveClass("icon-button");
           expect(close.getAttribute("aria-label")).toBe("Dismiss notification");
           close.focus();
           expect(close).toHaveFocus();

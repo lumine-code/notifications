@@ -270,8 +270,26 @@ lumine-notifications {
 
     .btn-copy-report {
       color: var(--notifications-link-color);
-      vertical-align: middle;
     }
+  }
+}
+
+:where(lumine-notifications, .notifications-log) .btn-copy-report {
+  vertical-align: middle;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  cursor: default;
+
+  &:hover {
+    color: var(--text-color-highlight);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-indicator-color);
+    outline-offset: -2px;
   }
 }
 
